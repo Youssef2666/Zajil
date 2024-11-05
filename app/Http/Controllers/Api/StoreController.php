@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Store;
-use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\StoreResource;
 
 class StoreController extends Controller
 {
@@ -22,7 +23,7 @@ class StoreController extends Controller
 
         $stores = $stores->get();
 
-        return $this->success($stores);
+        return $this->success(StoreResource::collection($stores));
     }
 
     /**

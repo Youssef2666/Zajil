@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Store;
-use App\Traits\ResponseTrait;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
     use ResponseTrait;
     public function index(Request $request)
-{
-    // $cacheKey = 'products_' . md5(serialize($request->all()));
-
-    $products =  Product::query()
+    {
+        $products = Product::query()
             ->where('store_id', Auth::user()?->store?->id)
             ->when($request->search, function ($query) use ($request) {
                 $query->where('name', 'like', "%{$request->search}%");
@@ -38,15 +35,14 @@ class ProductController extends Controller
             ->when($request->most_popular, function ($query) {
                 $query->withCount('favouritedByUsers')->orderBy('favourited_by_users_count', 'desc');
             })
-            // ->with(['productCategory', 'variationOptions'])
+            ->with(['productCategory', 'variationOptions'])
             ->get();
 
-    return $this->success([
-        'total_products' => $products->count(),
-        'products' => $products,
-    ]);
-}
-
+        return $this->success([
+            'total_products' => $products->count(),
+            'products' => ProductResource::collection($products),
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -139,7 +135,5 @@ class ProductController extends Controller
         $product->ratings()->attach(Auth::id(), ['rating' => $data['rating']]);
         return $this->success($product, 'course rated successfully');
     }
-
-
 
 }
