@@ -12,6 +12,15 @@ class VariationSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $variations = [
+            [
+                'name' => 'color',
+                'product_category_id' => 1
+            ],
+            [
+                'name' => 'size',
+                'product_category_id' => 1
+            ]
+        ];
     }
 }

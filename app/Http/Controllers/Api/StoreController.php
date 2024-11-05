@@ -21,11 +21,14 @@ class StoreController extends Controller
             $stores->with('products');
         }
 
+        if ($request->has('search')) {
+            $stores->where('name', 'like', '%' . $request->search . '%');
+        }
+
         $stores = $stores->get();
 
         return $this->success(StoreResource::collection($stores));
     }
-
     /**
      * Store a newly created resource in storage.
      */

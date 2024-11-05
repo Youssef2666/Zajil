@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Cart;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -22,7 +22,7 @@ class CartController extends Controller
         $totalPrice = $cart->products->sum(function ($product) {
             return $product->price * $product->pivot->quantity;
         });
-    
+
         return $this->success([
             'total_price' => number_format($totalPrice, 2),
             'cart' => $cart,
@@ -45,4 +45,28 @@ class CartController extends Controller
         $cart->products()->detach($request->product_id);
         return $this->success(message: 'تم حذف المنتج من السلة');
     }
+
+    public function updateProductQuantity(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $cart = Cart::where('user_id', Auth::id())->first();
+
+        if (!$cart) {
+            return $this->error('السلة غير موجودة', 404);
+        }
+
+        $productExists = $cart->products()->where('product_id', $request->product_id)->exists();
+
+        if ($productExists) {
+            $cart->products()->updateExistingPivot($request->product_id, ['quantity' => $request->quantity]);
+            return $this->success(message: 'تم تحديث كمية المنتج في السلة');
+        } else {
+            return $this->error('المنتج غير موجود في السلة', 404);
+        }
+    }
+
 }

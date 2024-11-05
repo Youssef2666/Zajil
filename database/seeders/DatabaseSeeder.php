@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,17 +16,47 @@ class DatabaseSeeder extends Seeder
     {
         User::factory()->create([
             'name' => 'ربيع', 
-            'email' => 'rabee@example.com',
+            'email' => 'rabee@gmail.com',
+            'password' => Hash::make('12345678'),
+
         ]);
         
         User::factory()->create([
             'name' => 'أحمد', 
-            'email' => 'ahmed@example.com',
+            'email' => 'ahmed@gmail.com',
+            'password' => Hash::make('12345678'),
+
+        ]);
+        User::factory()->create([
+            'name' => 'سعود', 
+            'email' => 'saoud@gmail.com',
+            'password' => Hash::make('12345678'),
         ]);
 
         User::factory()->create([
-            'name' => 'سعود', 
-            'email' => 'saoud@example.com',
+            'name' => 'يوسف', 
+            'email' => 'youssef@gmail.com',
+            'password' => Hash::make('12345678'),
+        ]);
+        User::factory()->create([
+            'name' => 'حمزة', 
+            'email' => 'hamza@gmail.com',
+            'password' => Hash::make('12345678'),
+        ]);
+        User::factory()->create([
+            'name' => 'الزابطي', 
+            'email' => 'alzabati@gmail.com',
+            'password' => Hash::make('12345678'),
+        ]);
+        User::factory()->create([
+            'name' => 'ابراهيم', 
+            'email' => 'ibrahim@gmail.com',
+            'password' => Hash::make('12345678'),
+        ]);
+        User::factory()->create([
+            'name' => 'منذر', 
+            'email' => 'monther@gmail.com',
+            'password' => Hash::make('12345678'),
         ]);
         
         User::factory(5)->create();
@@ -35,6 +66,8 @@ class DatabaseSeeder extends Seeder
             ProductCategorySeeder::class,
             ProductSeeder::class,
             ShipmentMethodSeeder::class,
+            CommentSeeder::class,
+            TransactionSeeder::class
         ]);
     }
 }

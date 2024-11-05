@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Store::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->tinyInteger('rating')->comment('Rating value between 1 and 5');
+            $table->decimal('rating', 3, 1)->comment('Rating value between 1 and 5, including decimals');
             $table->unique(['user_id', 'store_id']);
             $table->timestamps();
         });

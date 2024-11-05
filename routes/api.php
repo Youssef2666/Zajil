@@ -48,6 +48,7 @@ Route::post('/users/update', [UserController::class, 'update'])->middleware('aut
 //cart
 Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth:sanctum');
 Route::post('/remove-from-cart', [CartController::class, 'removeFromCart'])->middleware('auth:sanctum');
+Route::post('/update-product-in-cart', [CartController::class, 'updateProductQuantity'])->middleware('auth:sanctum');
 Route::get('/view-cart', [CartController::class, 'viewCart'])->middleware('auth:sanctum');
 
 
