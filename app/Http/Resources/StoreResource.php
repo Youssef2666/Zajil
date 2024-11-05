@@ -21,7 +21,8 @@ class StoreResource extends JsonResource
             'description' => $this->description,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-
+            'average_rating' => $this->ratings()->avg('rating'),
+            'number_of_ratings' => $this->ratings->count(),
             'products' => $request->has('with') && in_array('products', explode(',', $request->input('with')))
                 ? $this->whenLoaded('products')
                 : null,

@@ -71,6 +71,19 @@ class StoreController extends Controller
 
     }
 
+    public function addStoreToFavourite(Request $request)
+    {
+        $request->validate([
+            'store_id' => 'exists:stores,id',
+        ]);
+
+        $user = Auth::user();
+
+        $user->favouriteStores()->toggle([$request->store_id]);
+
+        return $this->success(message: 'تمت العملية بنجاح');
+    }
+
     public function rateStore(Request $request)
     {
         $data = $request->validate([

@@ -21,6 +21,8 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'stock' => $this->stock,
+            'average_rating' => $this->ratings()->avg('rating'),
+            'number_of_ratings' => $this->ratings->count(),
             'product_category' => $this->whenLoaded('productCategory', function () {
                 return [
                     'id' => $this->productCategory->id,

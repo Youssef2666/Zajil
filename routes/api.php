@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\SadadController;
 use App\Http\Controllers\Api\TLyncController;
 use App\Http\Controllers\Api\AdfaliController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\LocalBankCardsController;
 use App\Http\Controllers\Api\RetalsController;
 use App\Http\Controllers\Api\ProductController;
@@ -76,5 +77,12 @@ Route::post('/products/{productId}/variation-options', [ProductController::class
 
 Route::post('/products/{productId}/favourite', [ProductController::class, 'addProductToFavourite'])->middleware('auth:sanctum');
 Route::get('/user/favourite-products', [UserController::class, 'getFavouriteProducts'])->middleware('auth:sanctum');
+Route::get('/user/favourite-stores', [UserController::class, 'getFavouriteStores'])->middleware('auth:sanctum');
 Route::post('/products/rate', [ProductController::class, 'rateProduct'])->middleware('auth:sanctum');
 Route::post('/stores/rate', [StoreController::class, 'rateStore'])->middleware('auth:sanctum');
+
+Route::post('/products/store/add-favourite', [StoreController::class, 'addStoreToFavourite'])->middleware('auth:sanctum');
+
+
+Route::post('/comments', [CommentController::class, 'addComment'])->middleware('auth:sanctum');
+Route::post('/comments/store/{storeId}', [CommentController::class, 'getStoreComments'])->middleware('auth:sanctum');

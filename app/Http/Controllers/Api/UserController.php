@@ -53,5 +53,16 @@ class UserController extends Controller
             'favourite_products' => $favouriteProducts,
         ]);
     }
+    public function getFavouriteStores()
+    {
+        $user = Auth::user();
+
+        $favouriteStores = $user->favouriteStores()->get();
+
+        return response()->json([
+            'message' => 'تم جلب المتاجر المفضلة',
+            'favourite_products' => $favouriteStores,
+        ]);
+    }
 
 }
