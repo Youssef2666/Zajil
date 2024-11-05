@@ -22,5 +22,9 @@ class VariationSeeder extends Seeder
                 'product_category_id' => 1
             ]
         ];
+
+        foreach ($variations as $variation) {
+            \App\Models\Variation::create($variation);
+        }
     }
 }

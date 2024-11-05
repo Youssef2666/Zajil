@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(Cart::class);
             $table->foreignIdFor(Product::class);
             $table->integer('quantity');
+            $table->text('image')->nullable();
             $table->timestamps();
         });
     }

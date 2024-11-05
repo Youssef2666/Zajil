@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
@@ -17,20 +18,18 @@ class CartController extends Controller
         $cart = Cart::with('products')->where('user_id', Auth::id())->first();
 
         if (!$cart || $cart->products->isEmpty()) {
-            return $this->success(data: [], message: 'السلة فارغة', status: 200);
+            return $this->success(data: null, message: 'السلة فارغة', status: 200);
         }
-        $totalPrice = $cart->products->sum(function ($product) {
-            return $product->price * $product->pivot->quantity;
-        });
 
-        return $this->success([
-            'total_price' => number_format($totalPrice, 2),
-            'cart' => $cart,
-        ]);
+        return $this->success(new CartResource($cart));
     }
 
     public function addToCart(Request $request)
     {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
         $cart = Cart::where('user_id', Auth::id())->first();
         if (!$cart) {
             $cart = Cart::create(['user_id' => Auth::id()]);
@@ -41,8 +40,19 @@ class CartController extends Controller
 
     public function removeFromCart(Request $request)
     {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+        ]);
+
         $cart = Cart::where('user_id', Auth::id())->first();
+
+        if (!$cart || !$cart->products()->where('product_id', $request->product_id)->exists()) {
+            return $this->success(message: 'المنتج غير موجود في السلة', status: 404);
+        }
+
+        // Detach the product from the cart
         $cart->products()->detach($request->product_id);
+
         return $this->success(message: 'تم حذف المنتج من السلة');
     }
 

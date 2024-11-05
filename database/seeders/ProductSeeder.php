@@ -7,9 +7,6 @@ use Illuminate\Database\Seeder;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $products = [
@@ -20,6 +17,7 @@ class ProductSeeder extends Seeder
                 'description' => 'HP OMEN 15',
                 'price' => 200,
                 'stock' => 10,
+                'image' => 'https://www.omen.com/content/dam/sites/omen/worldwide/laptops/omen-15-laptop/2-0/starmade-15-50-w-numpad-4-zone-oled-shadow-black-nt-h-dcam-non-odd-non-fpr-freedos-core-set-front-right-copy.png'
             ],
             [
                 'product_category_id' => 4,
@@ -28,14 +26,16 @@ class ProductSeeder extends Seeder
                 'description' => 'طاقم ذهب',
                 'price' => 1200,
                 'stock' => 3,
+                'image' => 'https://png.pngtree.com/png-clipart/20230417/original/pngtree-golden-necklace-jewelry-png-image_9059019.png'
             ],
             [
                 'product_category_id' => 3,
                 'store_id' => 2,
                 'name' => 'IPhone 16',
-                'description' => 'لون اسود',
+                'description' => 'IPhone 16 From Dubai',
                 'price' => 600,
                 'stock' => 5,
+                'image' => 'https://static1.xdaimages.com/wordpress/wp-content/uploads/2023/09/iphone-15-pro-max-render.png'
             ],
             [
                 'product_category_id' => 2,
@@ -44,6 +44,7 @@ class ProductSeeder extends Seeder
                 'description' => 'لون ذهبي',
                 'price' => 500,
                 'stock' => 7,
+                'image' => 'https://freepngimg.com/thumb/apple/68529-ipad-mini-apple-tablet-air-free-transparent-image-hq.png'
             ]
         ];
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VariationController;
 use App\Http\Controllers\Api\WalletController;
 
 Route::get('/user', function (Request $request) {
@@ -41,6 +42,7 @@ Route::apiResources([
 Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');
 Route::apiResource('orders', OrderController::class)->middleware('auth:sanctum');
 Route::apiResource('stores', StoreController::class)->middleware('auth:sanctum');
+Route::apiResource('variations', VariationController::class)->middleware('auth:sanctum');
 
 Route::post('/users/update', [UserController::class, 'update'])->middleware('auth:sanctum');
 

@@ -67,7 +67,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ShipmentMethodSeeder::class,
             CommentSeeder::class,
-            TransactionSeeder::class
+            TransactionSeeder::class,
+            VariationSeeder::class,
         ]);
     }
 }
