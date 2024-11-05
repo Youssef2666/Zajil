@@ -108,4 +108,11 @@ class User extends Authenticatable
             ->withPivot('rating')
             ->withTimestamps();
     }
+
+    public function ratedStores()
+    {
+        return $this->belongsToMany(Store::class, 'rate_store')
+            ->withPivot('rating')
+            ->withTimestamps();
+    }
 }

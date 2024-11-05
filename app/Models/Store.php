@@ -23,4 +23,11 @@ class Store extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function ratings()
+    {
+        return $this->belongsToMany(User::class, 'rate_store')
+            ->withPivot('rating')
+            ->withTimestamps();
+    }
 }

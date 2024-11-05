@@ -77,3 +77,4 @@ Route::post('/products/{productId}/variation-options', [ProductController::class
 Route::post('/products/{productId}/favourite', [ProductController::class, 'addProductToFavourite'])->middleware('auth:sanctum');
 Route::get('/user/favourite-products', [UserController::class, 'getFavouriteProducts'])->middleware('auth:sanctum');
 Route::post('/products/rate', [ProductController::class, 'rateProduct'])->middleware('auth:sanctum');
+Route::post('/stores/rate', [StoreController::class, 'rateStore'])->middleware('auth:sanctum');

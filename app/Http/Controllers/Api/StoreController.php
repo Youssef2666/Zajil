@@ -69,4 +69,23 @@ class StoreController extends Controller
     {
 
     }
+
+    public function rateStore(Request $request)
+    {
+        $data = $request->validate([
+            'store_id' => 'required|exists:products,id',
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $store = Store::findOrFail($data['store_id']);
+
+        $existingRating = $store->ratings()->where('user_id', Auth::id())->exists();
+
+        if ($existingRating) {
+            return $this->error('You have already rated this store', 400);
+        }
+
+        $store->ratings()->attach(Auth::id(), ['rating' => $data['rating']]);
+        return $this->success($store, 'course rated successfully');
+    }
 }
