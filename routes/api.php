@@ -85,4 +85,4 @@ Route::post('/products/store/add-favourite', [StoreController::class, 'addStoreT
 
 
 Route::post('/comments', [CommentController::class, 'addComment'])->middleware('auth:sanctum');
-Route::post('/comments/store/{storeId}', [CommentController::class, 'getStoreComments'])->middleware('auth:sanctum');
+Route::get('/comments/store/{storeId}', [CommentController::class, 'getStoreComments'])->middleware('auth:sanctum');
