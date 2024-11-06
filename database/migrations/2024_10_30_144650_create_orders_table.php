@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Location;
 use App\Models\ShipmentMethod;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->string('status')->default('pending');
             $table->foreignIdFor(ShipmentMethod::class);
+            $table->foreignIdFor(Location::class)->nullable();
             $table->timestamps();
         });
     }

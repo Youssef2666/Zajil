@@ -12,6 +12,7 @@ class Order extends Model
         'quantity',
         'status',
         'shipment_method_id',
+        'location_id',
     ];
 
     public function products()

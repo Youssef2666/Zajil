@@ -19,9 +19,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariationController;
 use App\Http\Controllers\Api\WalletController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/user', [UserController::class, 'whoAmI'])->middleware('auth:sanctum');
 
 
 //auth
@@ -40,7 +38,7 @@ Route::apiResources([
 ]);
 
 Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');
-Route::apiResource('orders', OrderController::class)->middleware('auth:sanctum');
+Route::apiResource('orders', OrderController::class)->middleware(['auth:sanctum', 'check-verified-phone','check-user-has-location']);
 Route::apiResource('stores', StoreController::class)->middleware('auth:sanctum');
 Route::apiResource('variations', VariationController::class)->middleware('auth:sanctum');
 
@@ -89,3 +87,7 @@ Route::post('/products/store/add-favourite', [StoreController::class, 'addStoreT
 
 Route::post('/comments', [CommentController::class, 'addComment'])->middleware('auth:sanctum');
 Route::get('/comments/store/{storeId}', [CommentController::class, 'getStoreComments'])->middleware('auth:sanctum');
+
+Route::post('/users/location/add', [UserController::class, 'addLocation'])->middleware('auth:sanctum');
+
+Route::post('/user/phones', [UserController::class, 'storePhone'])->middleware('auth:sanctum');

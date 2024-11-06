@@ -87,16 +87,7 @@ class AuthController extends Controller
             return $this->error($e->getMessage(), 500);
         }
     }
-    public function whoAmI()
-    {
-        $user = Auth::user();
-
-        if ($user->image) {
-            $user->image = asset('storage/' . $user->image);
-        }
-
-        return $this->success($user);
-    }
+    
 
     public function login(LoginRequest $request)
     {
