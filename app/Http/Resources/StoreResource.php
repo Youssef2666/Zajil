@@ -21,11 +21,22 @@ class StoreResource extends JsonResource
             'description' => $this->description,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'image' => $this->image,
             'average_rating' => $this->ratings()->avg('rating'),
             'number_of_ratings' => $this->ratings->count(),
-            'products' => $request->has('with') && in_array('products', explode(',', $request->input('with')))
-                ? $this->whenLoaded('products')
-                : null,
+            'products' => ProductResource::collection($this->whenLoaded('products')),
+            'categories' => $this->whenLoaded('products', function () {
+                return $this->products
+                    ->pluck('productCategory')
+                    ->unique('id')
+                    ->map(function ($category) {
+                        return [
+                            'id' => $category->id,
+                            'name' => $category->name,
+                        ];
+                    });
+            }),
         ];
     }
+
 }

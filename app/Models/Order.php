@@ -13,6 +13,7 @@ class Order extends Model
         'status',
         'shipment_method_id',
         'location_id',
+        'store_id',
     ];
 
     public function products()
@@ -20,6 +21,7 @@ class Order extends Model
         return $this->belongsToMany(Product::class)
             ->withPivot('quantity');
     }
+    
 
     public function user()
     {
@@ -29,6 +31,15 @@ class Order extends Model
     public function shipmentMethod()
     {
         return $this->belongsTo(ShipmentMethod::class);
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
+    public function transaction(){
+        return $this->hasOne(Transaction::class);
     }
 
 }

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Cart;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
-use App\Models\Cart;
-use App\Traits\ResponseTrait;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -25,18 +26,30 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request)
-    {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
-        $cart = Cart::where('user_id', Auth::id())->first();
-        if (!$cart) {
-            $cart = Cart::create(['user_id' => Auth::id()]);
-        }
-        $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
-        return $this->success(message: 'تم اضافة المنتج الى السلة');
+{
+    $request->validate([
+        'product_id' => 'required|exists:products,id',
+        'quantity' => 'required|integer|min:1',
+    ]);
+
+    $user = Auth::user();
+    $product = Product::findOrFail($request->product_id);
+    $cart = Cart::firstOrCreate(
+        ['user_id' => $user->id],
+        ['store_id' => $product->store_id]
+    );
+
+    if ($cart->store_id && $cart->store_id != $product->store_id) {
+        return response()->json([
+            'message' => 'You can only add products from the same store to the cart.'
+        ], 400);
     }
+
+    $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+
+    return $this->success(message: 'Product added to cart successfully');
+}
+
 
     public function removeFromCart(Request $request)
     {
@@ -50,7 +63,6 @@ class CartController extends Controller
             return $this->success(message: 'المنتج غير موجود في السلة', status: 404);
         }
 
-        // Detach the product from the cart
         $cart->products()->detach($request->product_id);
 
         return $this->success(message: 'تم حذف المنتج من السلة');

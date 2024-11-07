@@ -13,6 +13,7 @@ class Store extends Model
         'description',
         'latitude',
         'longitude',
+        'image',
         'user_id',
     ];
 
@@ -51,5 +52,10 @@ class Store extends Model
             ->leftJoin('comment_store as replies', 'comment_store.id', '=', 'replies.parent_id')
             ->select('comment_store.*', 'replies.id as reply_id', 'replies.comment as reply_comment')
             ->get();
+    }
+
+    public function productCategories()
+    {
+        return $this->hasManyThrough(ProductCategory::class, Product::class);
     }
 }

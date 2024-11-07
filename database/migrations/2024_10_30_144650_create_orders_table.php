@@ -2,6 +2,7 @@
 
 use App\Models\Location;
 use App\Models\ShipmentMethod;
+use App\Models\Store;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->foreignIdFor(ShipmentMethod::class);
             $table->foreignIdFor(Location::class)->nullable();
+            $table->foreignIdFor(Store::class);
             $table->timestamps();
         });
     }

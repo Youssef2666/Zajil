@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\StoreController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariationController;
 use App\Http\Controllers\Api\WalletController;
@@ -41,6 +42,7 @@ Route::apiResource('products', ProductController::class)->middleware('auth:sanct
 Route::apiResource('orders', OrderController::class)->middleware(['auth:sanctum', 'check-verified-phone','check-user-has-location']);
 Route::apiResource('stores', StoreController::class)->middleware('auth:sanctum');
 Route::apiResource('variations', VariationController::class)->middleware('auth:sanctum');
+Route::apiResource('transactions', TransactionController::class)->middleware('auth:sanctum');
 
 Route::post('/users/update', [UserController::class, 'update'])->middleware('auth:sanctum');
 
@@ -91,3 +93,12 @@ Route::get('/comments/store/{storeId}', [CommentController::class, 'getStoreComm
 Route::post('/users/location/add', [UserController::class, 'addLocation'])->middleware('auth:sanctum');
 
 Route::post('/user/phones', [UserController::class, 'storePhone'])->middleware('auth:sanctum');
+
+Route::patch('/user/update-default-location', [UserController::class, 'updateDefaultLocation'])
+    ->middleware('auth:sanctum');
+
+Route::patch('/user/update-default-phone', [UserController::class, 'updateDefaultPhone'])
+    ->middleware('auth:sanctum');
+
+Route::get('/stores/{store}/products', [StoreController::class, 'getStoreProducts'])->middleware('auth:sanctum');
+Route::get('/stores/{store}/categories', [StoreController::class, 'getStoreCategories'])->middleware('auth:sanctum');

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Store;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\StoreResource;
+use App\Models\Product;
+use App\Models\Store;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
@@ -17,15 +19,11 @@ class StoreController extends Controller
     {
         $stores = Store::query();
 
-        if ($request->has('with') && in_array('products', explode(',', $request->input('with')))) {
-            $stores->with('products');
-        }
-
         if ($request->has('search')) {
             $stores->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $stores = $stores->get();
+        $stores = $stores->with('products')->get();
 
         return $this->success(StoreResource::collection($stores));
     }
@@ -50,15 +48,20 @@ class StoreController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        $store = Store::with('products')->findOrFail($id);
-        return $this->success($store);
+        $storeQuery = Store::with(['products' => function ($query) use ($request) {
+            if ($request->has('product_category_id')) {
+                $query->where('product_category_id', $request->input('product_category_id'));
+            }
+            $query->with('productCategory');
+        }]);
+
+        $store = $storeQuery->findOrFail($id);
+
+        return $this->success(StoreResource::make($store));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $store = Store::find($id);
@@ -104,5 +107,29 @@ class StoreController extends Controller
 
         $store->ratings()->attach(Auth::id(), ['rating' => $data['rating']]);
         return $this->success($store, 'course rated successfully');
+    }
+
+    public function getStoreProducts(Request $request, string $id)
+    {
+        $query = Product::where('store_id', $id);
+
+        if ($request->has('product_category_id')) {
+            $query->where('product_category_id', $request->product_category_id);
+        }
+
+        $products = $query->get();
+
+        return $this->success(ProductResource::collection($products));
+    }
+
+    public function getStoreCategories(Request $request, string $id)
+    {
+        $categories = Product::where('store_id', $id)
+            ->join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
+            ->select('product_categories.id', 'product_categories.name')
+            ->distinct()
+            ->get();
+
+        return $this->success($categories);
     }
 }
