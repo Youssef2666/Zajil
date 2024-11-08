@@ -16,12 +16,20 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'code' => $this->code,
             'total' => $this->total,
+            'status' => $this->status,
             'shipment_method_id' => $this->shipment_method_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'store_id' => $this->store_id,
             'products' => ProductResource::collection($this->whenLoaded('products')),
+            'location' => $this->whenLoaded('location', function () {
+                return [
+                    'city' => $this->location->city,
+                    'address' => $this->location->address,
+                ];
+            }),
         ];
     }
 }

@@ -17,12 +17,13 @@ class StoreResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'name' => $this->name,
             'description' => $this->description,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'image' => $this->image,
-            'average_rating' => $this->ratings()->avg('rating'),
+            'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
             'products' => ProductResource::collection($this->whenLoaded('products')),
             'categories' => $this->whenLoaded('products', function () {
@@ -36,6 +37,7 @@ class StoreResource extends JsonResource
                         ];
                     });
             }),
+            'location' => $this->whenLoaded('location'),
         ];
     }
 

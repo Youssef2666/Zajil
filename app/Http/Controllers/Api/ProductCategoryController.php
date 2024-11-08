@@ -15,13 +15,27 @@ class ProductCategoryController extends Controller
         $categories = ProductCategory::with('variations')->get();
         return $this->success($categories);
     }
+//     public function index()
+// {
+//     // Get all categories along with their variations, parent category, and child categories
+//     $categories = ProductCategory::with(['variations', 'parent', 'children'])->get();
+
+//     return $this->success($categories);
+// }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $category = ProductCategory::create($request->all());
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:product_categories,id',
+        ]);
+
+        $category = ProductCategory::create($data);
+
         return $this->success($category);
     }
 

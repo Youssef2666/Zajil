@@ -23,7 +23,7 @@ class StoreController extends Controller
             $stores->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $stores = $stores->with('products')->get();
+        $stores = $stores->with('products','location')->get();
 
         return $this->success(StoreResource::collection($stores));
     }
@@ -50,7 +50,7 @@ class StoreController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $storeQuery = Store::with(['products' => function ($query) use ($request) {
+        $storeQuery = Store::with(['location','products' => function ($query) use ($request) {
             if ($request->has('product_category_id')) {
                 $query->where('product_category_id', $request->input('product_category_id'));
             }
@@ -111,7 +111,7 @@ class StoreController extends Controller
 
     public function getStoreProducts(Request $request, string $id)
     {
-        $query = Product::where('store_id', $id);
+        $query = Product::with('productCategory', 'variationOptions')->where('store_id', $id);
 
         if ($request->has('product_category_id')) {
             $query->where('product_category_id', $request->product_category_id);
@@ -132,4 +132,33 @@ class StoreController extends Controller
 
         return $this->success($categories);
     }
+
+    public function addStoreLocation(Request $request)
+    {
+        $request->validate([
+            'store_id' => 'required|exists:stores,id',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'postal_code' => 'nullable|string|max:255',
+        ]);
+
+        $store = Store::findOrFail($request->store_id);
+
+        $store->location()->create([
+            'name' => $request->name,
+            'address' => $request->address,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'city' => $request->city,
+            'country' => $request->country,
+            'postal_code' => $request->postal_code,
+        ]);
+
+        return $this->success(message: 'تمت إضافة الموقع بنجاح');
+    }
+
 }

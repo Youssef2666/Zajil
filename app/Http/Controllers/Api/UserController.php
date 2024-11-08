@@ -71,10 +71,13 @@ class UserController extends Controller
             $userQuery->with('locations');
         }
 
+        
         $user = $userQuery->first();
 
-        if ($user->image) {
-            $user->image = asset('storage/' . $user->image);
+        if ($user && $user->profile_photo_path) {
+            $user->profile_photo_path = asset('storage/' . $user->profile_photo_path);
+        } else {
+            $user->profile_photo_path = null;
         }
 
         return $this->success($user);

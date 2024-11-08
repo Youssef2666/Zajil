@@ -83,6 +83,7 @@ Route::get('/user/favourite-products', [UserController::class, 'getFavouriteProd
 Route::get('/user/favourite-stores', [UserController::class, 'getFavouriteStores'])->middleware('auth:sanctum');
 Route::post('/products/rate', [ProductController::class, 'rateProduct'])->middleware('auth:sanctum');
 Route::post('/stores/rate', [StoreController::class, 'rateStore'])->middleware('auth:sanctum');
+Route::post('/stores/location/add', [StoreController::class, 'addStoreLocation'])->middleware('auth:sanctum');
 
 Route::post('/products/store/add-favourite', [StoreController::class, 'addStoreToFavourite'])->middleware('auth:sanctum');
 
@@ -102,3 +103,5 @@ Route::patch('/user/update-default-phone', [UserController::class, 'updateDefaul
 
 Route::get('/stores/{store}/products', [StoreController::class, 'getStoreProducts'])->middleware('auth:sanctum');
 Route::get('/stores/{store}/categories', [StoreController::class, 'getStoreCategories'])->middleware('auth:sanctum');
+
+Route::post('/wallet/transfer', [WalletController::class, 'transferBalance'])->middleware('auth:sanctum');

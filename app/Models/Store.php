@@ -58,4 +58,8 @@ class Store extends Model
     {
         return $this->hasManyThrough(ProductCategory::class, Product::class);
     }
+
+    public function location(){
+        return $this->hasOne(StoreLocation::class);
+    }
 }

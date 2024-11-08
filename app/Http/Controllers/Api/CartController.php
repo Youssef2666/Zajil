@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Cart;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
+use App\Models\Cart;
+use App\Models\Product;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -26,30 +26,40 @@ class CartController extends Controller
     }
 
     public function addToCart(Request $request)
-{
-    $request->validate([
-        'product_id' => 'required|exists:products,id',
-        'quantity' => 'required|integer|min:1',
-    ]);
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-    $user = Auth::user();
-    $product = Product::findOrFail($request->product_id);
-    $cart = Cart::firstOrCreate(
-        ['user_id' => $user->id],
-        ['store_id' => $product->store_id]
-    );
+        $user = Auth::user();
+        $product = Product::findOrFail($request->product_id);
 
-    if ($cart->store_id && $cart->store_id != $product->store_id) {
-        return response()->json([
-            'message' => 'You can only add products from the same store to the cart.'
-        ], 400);
+        // Retrieve or create a cart for the user
+        $cart = Cart::firstOrCreate(
+            ['user_id' => $user->id],
+            ['store_id' => $product->store_id]
+        );
+
+        // Check if cart already has a store_id set
+        if ($cart->store_id === null) {
+            // Set the store_id of the product if the cart is empty and doesn't have one
+            $cart->store_id = $product->store_id;
+            $cart->save();
+        }
+
+        // Ensure all products in the cart are from the same store
+        if ($cart->store_id != $product->store_id) {
+            return response()->json([
+                'message' => 'You can only add products from the same store to the cart.',
+            ], 400);
+        }
+
+        // Add the product to the cart with the specified quantity
+        $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+
+        return $this->success(message: 'Product added to cart successfully');
     }
-
-    $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
-
-    return $this->success(message: 'Product added to cart successfully');
-}
-
 
     public function removeFromCart(Request $request)
     {

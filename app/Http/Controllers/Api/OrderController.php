@@ -2,25 +2,33 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Store;
-use App\Models\Coupon;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\OrderResource;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
     use ResponseTrait;
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Auth::user()->orders()->with(['products' => function ($query) {
-                $query->withPivot('quantity')
-                ->with(['ratings', 'productCategory']);
-        }])->get();
+        $status = $request->input('status');
+
+        $ordersQuery = Auth::user()->orders()->with(['location', 'products' => function ($query) {
+            $query->withPivot('quantity')
+                ->with(['productCategory']);
+        }]);
+
+        if ($status) {
+            $ordersQuery->where('status', $status);
+        }
+
+        $orders = $ordersQuery->get();
 
         return $this->success(OrderResource::collection($orders));
     }
@@ -29,17 +37,17 @@ class OrderController extends Controller
     {
 
         $locationId = $request->input('location_id') ?? Auth::user()->locations()->where('is_default', 1)->pluck('id')->first();
-        
+
         if (!$locationId) {
             return response()->json(['message' => 'لم يتم العثور على موقع افتراضي'], 400);
         }
-        
+
         $data = $request->validate([
             'coupon_code' => 'nullable|string',
             'shipment_method_id' => 'required|integer',
             // 'store_id' => 'required|integer|exists:stores,id',
         ]);
-        
+
         $user = Auth::user();
         $cart = $user->cart;
         $store = $cart->products()->first()->store;
@@ -75,6 +83,7 @@ class OrderController extends Controller
             $order->shipment_method_id = $request->shipment_method_id;
             $order->location_id = $locationId;
             $order->store_id = $store->id;
+            $order->code = 'ORD-' . $order->id . '-' . $locationId . '-' . time();
             $order->save();
 
             foreach ($cart->products as $product) {
@@ -94,10 +103,12 @@ class OrderController extends Controller
                 'type' => 'debit',
                 'amount' => $totalPrice,
                 'description' => "Order #{$order->id} purchase from store {$store->name}",
-                'order_id' => $order->id
+                'order_id' => $order->id,
             ]);
 
             $cart->products()->detach();
+            $cart->store_id = null;
+            $cart->save();
         });
 
         return response()->json([

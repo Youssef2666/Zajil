@@ -45,7 +45,34 @@ class ProductSeeder extends Seeder
                 'price' => 50,
                 'stock' => 7,
                 'image' => 'https://freepngimg.com/thumb/apple/68529-ipad-mini-apple-tablet-air-free-transparent-image-hq.png'
-            ]
+            ],
+            [
+                'product_category_id' => 2,
+                'store_id' => 1,
+                'name' => 'يا صاحبي',
+                'description' => 'لون ذهبي',
+                'price' => 50,
+                'stock' => 7,
+                'image' => 'https://png.pngtree.com/png-clipart/20230414/original/pngtree-isolated-burger-on-transparent-background-png-image_9055072.png'
+            ],
+            [
+                'product_category_id' => 2,
+                'store_id' => 1,
+                'name' => 'سينتي سيتي',
+                'description' => 'لون ذهبي',
+                'price' => 50,
+                'stock' => 7,
+                'image' => 'https://png.pngtree.com/png-clipart/20230414/original/pngtree-isolated-burger-on-transparent-background-png-image_9055072.png'
+            ],
+            [
+                'product_category_id' => 2,
+                'store_id' => 1,
+                'name' => 'أغنية جيم أوف ثرونز',
+                'description' => 'منذرررررررررررررررر',
+                'price' => 50,
+                'stock' => 7,
+                'image' => 'https://www.pngarts.com/files/3/Game-of-Thrones-Logo-PNG-Image-Background.png'
+            ],
         ];
 
         foreach ($products as $product) {

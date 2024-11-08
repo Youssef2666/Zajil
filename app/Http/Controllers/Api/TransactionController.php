@@ -13,8 +13,8 @@ class TransactionController extends Controller
     use ResponseTrait;
     public function index()
     {
-        $transaction = Auth::user()->transactions()->with('order.store')->get();
-        return $this->success(TransactionResource::collection($transaction));
+        $transactions = Auth::user()->transactions()->with('order.store','receiver')->get();
+        return $this->success(TransactionResource::collection($transactions));
     }
     public function show(Request $request, $transactionId)
     {
@@ -53,7 +53,6 @@ class TransactionController extends Controller
             'description' => $description,
         ]);
 
-        // Update wallet balance
         $wallet->balance += $type === 'credit' ? $amount : -$amount;
         $wallet->save();
 

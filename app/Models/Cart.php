@@ -8,6 +8,7 @@ class Cart extends Model
 {
     protected $fillable = [
         'user_id',
+        'store_id',
     ];
 
     public function user()
@@ -23,6 +24,11 @@ class Cart extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class)->withPivot('quantity');
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
     }
 
 }

@@ -14,6 +14,7 @@ class Order extends Model
         'shipment_method_id',
         'location_id',
         'store_id',
+        'code',
     ];
 
     public function products()
@@ -42,4 +43,7 @@ class Order extends Model
         return $this->hasOne(Transaction::class);
     }
 
+    public function location(){
+        return $this->belongsTo(Location::class);
+    }
 }
