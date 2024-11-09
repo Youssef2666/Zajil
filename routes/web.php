@@ -26,4 +26,3 @@ Route::get('/payment/failure', function () {
 })->name('payment.failure');
 
 Route::get('/payment/callback', [LocalBankCardsController::class, 'handleCallback'])->name('payment.callback')->middleware('auth:sanctum');
-

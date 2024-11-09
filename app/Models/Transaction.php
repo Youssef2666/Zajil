@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-    protected $fillable = ['wallet_id', 'type', 'amount', 'description', 'order_id', 'receiver_user_id'];
+    protected $fillable = ['wallet_id', 'type', 'amount', 'description', 'order_id', 'receiver_user_id', 'payment_method_id'];
 
     public function wallet()
     {
@@ -39,5 +39,10 @@ class Transaction extends Model
     public function receiver()
     {
         return $this->belongsTo(User::class, 'receiver_user_id');
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 }

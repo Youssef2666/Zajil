@@ -14,16 +14,34 @@ class ProductCategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Clothes'
+                'name' => 'ملابس'
+            ],
+            [
+                'name' => 'الكترونات',
+            ],
+            [
+                'name' => 'أحذية',
+                'parent_id' => 1
+            ],
+            [
+                'name' => 'حقائب',
+                'parent_id' => 1
+            ],
+            [
+                'name' => 'جوارب',
+                'parent_id' => 1
             ],
             [
                 'name' => 'Laptop',
+                'parent_id' => 2
             ],
             [
                 'name' => 'Tablet',
+                'parent_id' => 2
             ],
             [
                 'name' => 'Phone',
+                'parent_id' => 2
             ],
             [
                 'name' => 'مجوهرات',

@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->foreignIdFor(Order::class)->nullable()->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class, 'receiver_user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignIdFor(PaymentMethod::class, 'payment_method_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
