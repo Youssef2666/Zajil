@@ -139,10 +139,9 @@ class ProductController extends Controller
     public function mostOrderedProducts()
     {
         $mostOrderedProducts = Product::getMostOrderedProducts();
-
+    
         return response()->json([
-            'most_ordered_products' => $mostOrderedProducts,
+            'most_ordered_products' => ProductResource::collection($mostOrderedProducts),
         ]);
     }
-
 }

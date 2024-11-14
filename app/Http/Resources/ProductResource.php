@@ -7,7 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    
     public function toArray($request)
     {
         $data = [
@@ -33,10 +32,13 @@ class ProductResource extends JsonResource
                     ];
                 });
             }),
+            'total_ordered_quantity' => $this->total_ordered_quantity ?? 0, // Add this line
         ];
+
         if ($this->pivot && $this->pivot->quantity !== null) {
             $data['quantity'] = $this->pivot->quantity;
         }
+
         return $data;
     }
 }
