@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\RetalsController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\ProductCategoryController;
+use App\Http\Controllers\Api\ShipmentMethodController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
@@ -36,6 +37,7 @@ Route::apiResources([
     'retals' => RetalsController::class,
     'products' => ProductController::class,
     'product-categories' => ProductCategoryController::class,
+    'shipment-methods' => ShipmentMethodController::class
 ]);
 
 Route::apiResource('products', ProductController::class)->middleware('auth:sanctum');

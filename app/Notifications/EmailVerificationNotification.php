@@ -21,12 +21,11 @@ class EmailVerificationNotification extends Notification
     public $receiverEmail;
     public function __construct($receiverEmail, $otp)
     {
-        $this->message = "use the below code to verify your email";
-        $this->subject = "Email Verification";
-        $this->fromEmail = 'monthermousa911@gmail.com';
-        $this->mailer = 'smtp';
+        $this->message = "قم باستخدام الرمز التالي لتفعيل حسابك";
+        $this->subject = "تفعيل حسابك";
+        $this->fromEmail = 'zajil@adimtech.com.ly';
+        $this->mailer = 'adimtech.com.ly';
         $this->otp = $otp;
-        Log::info('EmailVerificationNotification constructor');
         $this->receiverEmail = $receiverEmail;
     }
 
