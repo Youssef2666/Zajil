@@ -34,7 +34,6 @@ class ProductResource extends JsonResource
             }),
         ];
 
-        // Include `total_ordered_quantity` only for the `mostOrderedProducts` endpoint
         if ($request->routeIs('mostOrderedProducts')) {
             $data['total_ordered_quantity'] = $this->total_ordered_quantity ?? 0;
         }

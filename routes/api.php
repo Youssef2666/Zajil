@@ -104,6 +104,6 @@ Route::get('/stores/{store}/products', [StoreController::class, 'getStoreProduct
 Route::get('/stores/{store}/categories', [StoreController::class, 'getStoreCategories'])->middleware('auth:sanctum');
 
 Route::post('/wallet/transfer', [WalletController::class, 'transferBalance'])->middleware('auth:sanctum');
-Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts']);
+Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts'])->name('mostOrderedProducts');;
 
 
