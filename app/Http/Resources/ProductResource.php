@@ -32,8 +32,12 @@ class ProductResource extends JsonResource
                     ];
                 });
             }),
-            'total_ordered_quantity' => $this->total_ordered_quantity ?? 0, // Add this line
         ];
+
+        // Include `total_ordered_quantity` only for the `mostOrderedProducts` endpoint
+        if ($request->routeIs('mostOrderedProducts')) {
+            $data['total_ordered_quantity'] = $this->total_ordered_quantity ?? 0;
+        }
 
         if ($this->pivot && $this->pivot->quantity !== null) {
             $data['quantity'] = $this->pivot->quantity;
