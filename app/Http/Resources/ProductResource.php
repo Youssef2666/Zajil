@@ -7,12 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  Request  $request
-     * @return array
-     */
+    
     public function toArray($request)
     {
         $data = [
@@ -24,7 +19,6 @@ class ProductResource extends JsonResource
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
             'image' => $this->image,
-            
             'product_category' => $this->whenLoaded('productCategory', function () {
                 return [
                     'id' => $this->productCategory->id,

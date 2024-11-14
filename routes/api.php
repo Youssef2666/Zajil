@@ -75,9 +75,6 @@ Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verify'])
 
 //wallet
 Route::get('/wallet', [WalletController::class, 'index'])->middleware('auth:sanctum');
-
-
-
 Route::post('/products/{productId}/variation-options', [ProductController::class, 'addVariationOptionsToProduct']);
 
 Route::post('/products/{productId}/favourite', [ProductController::class, 'addProductToFavourite'])->middleware('auth:sanctum');
@@ -107,5 +104,6 @@ Route::get('/stores/{store}/products', [StoreController::class, 'getStoreProduct
 Route::get('/stores/{store}/categories', [StoreController::class, 'getStoreCategories'])->middleware('auth:sanctum');
 
 Route::post('/wallet/transfer', [WalletController::class, 'transferBalance'])->middleware('auth:sanctum');
-
 Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts']);
+
+

@@ -67,7 +67,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = Product::with('productCategory', 'variationOptions')->find($id);
-        return $this->success($product);
+        return $this->success(ProductResource::make($product));
     }
 
     /**
