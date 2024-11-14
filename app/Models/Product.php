@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -51,5 +52,16 @@ class Product extends Model
             ->withPivot('rating')
             ->withTimestamps();
     }
+
+    public static function getMostOrderedProducts($limit = 10)
+    {
+        return self::withCount(['orders as total_ordered_quantity' => function ($query) {
+            $query->select(DB::raw("SUM(order_product.quantity)"));
+        }])
+        ->orderByDesc('total_ordered_quantity')
+        ->take($limit)
+        ->get();
+    }
+
 
 }

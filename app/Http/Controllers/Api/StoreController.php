@@ -126,7 +126,7 @@ class StoreController extends Controller
     {
         $categories = Product::where('store_id', $id)
             ->join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
-            ->select('product_categories.id', 'product_categories.name')
+            ->select('product_categories.id', 'product_categories.name', 'product_categories.image')
             ->distinct()
             ->get();
 

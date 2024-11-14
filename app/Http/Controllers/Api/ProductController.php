@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Store;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProductResource;
+use App\Models\Product;
+use App\Models\Store;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -134,6 +134,15 @@ class ProductController extends Controller
 
         $product->ratings()->attach(Auth::id(), ['rating' => $data['rating']]);
         return $this->success($product, 'course rated successfully');
+    }
+
+    public function mostOrderedProducts()
+    {
+        $mostOrderedProducts = Product::getMostOrderedProducts();
+
+        return response()->json([
+            'most_ordered_products' => $mostOrderedProducts,
+        ]);
     }
 
 }
