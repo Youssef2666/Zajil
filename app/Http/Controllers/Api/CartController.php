@@ -35,20 +35,16 @@ class CartController extends Controller
         $user = Auth::user();
         $product = Product::findOrFail($request->product_id);
 
-        // Retrieve or create a cart for the user
         $cart = Cart::firstOrCreate(
             ['user_id' => $user->id],
             ['store_id' => $product->store_id]
         );
 
-        // Check if cart already has a store_id set
         if ($cart->store_id === null) {
-            // Set the store_id of the product if the cart is empty and doesn't have one
             $cart->store_id = $product->store_id;
             $cart->save();
         }
 
-        // Ensure all products in the cart are from the same store
         if ($cart->store_id != $product->store_id) {
             return response()->json([
                 'message' => 'You can only add products from the same store to the cart.',

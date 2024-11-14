@@ -20,6 +20,7 @@ class CartResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
+            'store_id' => $this->store_id,
             'products' => $this->whenLoaded('products', function () {
                 return $this->products->map(function ($product) {
                     return [

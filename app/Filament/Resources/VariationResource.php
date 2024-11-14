@@ -20,6 +20,8 @@ use App\Filament\Resources\VariationResource\RelationManagers\OptionsRelationMan
 class VariationResource extends Resource
 {
     protected static ?string $model = Variation::class;
+    protected static ?string $modelLabel = 'خيارات المنتج';
+    protected static ?string $pluralModelLabel = 'خيارات المنتجات';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

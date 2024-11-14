@@ -9,9 +9,6 @@ use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
@@ -22,7 +19,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->foreignIdFor(Order::class)->nullable()->constrained()->onDelete('cascade');
             $table->foreignIdFor(User::class, 'receiver_user_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignIdFor(PaymentMethod::class, 'payment_method_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignIdFor(PaymentMethod::class, 'payment_method_id')->nullable();
             $table->timestamps();
         });
     }

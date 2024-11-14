@@ -13,10 +13,14 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\ProductResource\RelationManagers;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
+    protected static ?string $modelLabel = 'المنتج';
+    protected static ?string $pluralModelLabel = 'المنتجات';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -24,7 +28,12 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')->required(),
+                TextInput::make('price')->required(),
+                TextInput::make('stock')->required(),
+                Select::make('product_category_id')
+                    ->relationship('productCategory', 'name')
+                    ->required(),
             ]);
     }
 
@@ -34,6 +43,7 @@ class ProductResource extends Resource
             ->columns([
                 TextColumn::make('id')->sortable()->searchable(),
                 TextColumn::make('name')->sortable()->searchable(),
+                TextColumn::make('price')->sortable()->searchable(),
                 TextColumn::make('stock')->sortable()->searchable(),
             ])
             ->filters([
