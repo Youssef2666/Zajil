@@ -35,7 +35,6 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
-
         $locationId = $request->input('location_id') ?? Auth::user()->locations()->where('is_default', 1)->pluck('id')->first();
 
         if (!$locationId) {
@@ -45,16 +44,16 @@ class OrderController extends Controller
         $data = $request->validate([
             'coupon_code' => 'nullable|string',
             'shipment_method_id' => 'required|integer',
-            // 'store_id' => 'required|integer|exists:stores,id',
         ]);
 
         $user = Auth::user();
         $cart = $user->cart;
-        $store = $cart->products()->first()->store;
 
         if (!$cart || $cart->products->isEmpty()) {
             return response()->json(['message' => 'السلة فارغة'], 400);
         }
+
+        $groupedProducts = $cart->products->groupBy('store_id');
 
         $totalPrice = $cart->products->sum(function ($product) {
             return $product->price * $product->pivot->quantity;
@@ -76,43 +75,55 @@ class OrderController extends Controller
             return response()->json(['message' => 'ليس لديك رصيد كافي'], 400);
         }
 
-        DB::transaction(function () use ($user, $cart, $totalPrice, $request, $locationId, $store) {
-            $order = new Order();
-            $order->user_id = $user->id;
-            $order->total = $totalPrice;
-            $order->shipment_method_id = $request->shipment_method_id;
-            $order->location_id = $locationId;
-            $order->store_id = $store->id;
-            $order->code = 'ORD-' . $order->id . '-' . $locationId . '-' . time();
-            $order->save();
+        $createdOrders = [];
 
-            foreach ($cart->products as $product) {
-                if ($product->stock < $product->pivot->quantity) {
-                    throw new \Exception("The product {$product->name} does not have enough stock.");
+        DB::transaction(function () use ($user, $cart, $groupedProducts, $totalPrice, $request, $locationId, &$createdOrders) {
+            foreach ($groupedProducts as $storeId => $products) {
+                $storeTotalPrice = $products->sum(function ($product) {
+                    return $product->price * $product->pivot->quantity;
+                });
+
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->total = $storeTotalPrice;
+                $order->shipment_method_id = $request->shipment_method_id;
+                $order->location_id = $locationId;
+                $order->store_id = $storeId;
+                $order->code = 'ORD-' . uniqid();
+                $order->save();
+
+                foreach ($products as $product) {
+                    if ($product->stock < $product->pivot->quantity) {
+                        throw new \Exception("The product {$product->name} does not have enough stock.");
+                    }
+
+                    $order->products()->attach($product->id, [
+                        'quantity' => $product->pivot->quantity,
+                        'price_at_purchase' => $product->price,
+                    ]);
+                    $product->decrement('stock', $product->pivot->quantity);
                 }
 
-                $order->products()->attach($product->id, ['quantity' => $product->pivot->quantity]);
-                $product->decrement('stock', $product->pivot->quantity);
+                $user->transactions()->create([
+                    'wallet_id' => $user->wallet->id,
+                    'type' => 'debit',
+                    'amount' => $storeTotalPrice,
+                    'description' => "Order #{$order->id} purchase from store ID {$storeId}",
+                    'order_id' => $order->id,
+                ]);
+
+                $createdOrders[] = $order;
             }
 
             $user->wallet->balance -= $totalPrice;
             $user->wallet->save();
 
-            $user->transactions()->create([
-                'wallet_id' => $user->wallet->id,
-                'type' => 'debit',
-                'amount' => $totalPrice,
-                'description' => "Order #{$order->id} purchase from store {$store->name}",
-                'order_id' => $order->id,
-            ]);
-
             $cart->products()->detach();
-            $cart->store_id = null;
-            $cart->save();
         });
 
         return response()->json([
-            'message' => 'تم انشاء الطلب بنجاح',
+            'message' => 'تم انشاء الطلبات بنجاح',
+            'orders' => $createdOrders,
             'original_total_price' => $originalTotalPrice,
             'discounted_total_price' => number_format($totalPrice, 2),
         ], 201);

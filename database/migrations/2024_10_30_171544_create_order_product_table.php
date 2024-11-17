@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(Order::class);
             $table->foreignIdFor(Product::class);
             $table->integer('quantity');
+            $table->decimal('price_at_purchase', 8, 2);
             $table->timestamps();
         });
     }

@@ -37,21 +37,8 @@ class CartController extends Controller
 
         $cart = Cart::firstOrCreate(
             ['user_id' => $user->id],
-            ['store_id' => $product->store_id]
         );
 
-        if ($cart->store_id === null) {
-            $cart->store_id = $product->store_id;
-            $cart->save();
-        }
-
-        if ($cart->store_id != $product->store_id) {
-            return response()->json([
-                'message' => 'You can only add products from the same store to the cart.',
-            ], 400);
-        }
-
-        // Add the product to the cart with the specified quantity
         $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
 
         return $this->success(message: 'Product added to cart successfully');

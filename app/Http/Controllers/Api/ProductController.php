@@ -35,6 +35,9 @@ class ProductController extends Controller
             ->when($request->most_popular, function ($query) {
                 $query->withCount('favouritedByUsers')->orderBy('favourited_by_users_count', 'desc');
             })
+            ->when($request->most_rated, function ($query) {
+                $query->withAvg('ratings', 'rating')->orderBy('ratings_avg_rating', 'desc');
+            })
             ->with(['productCategory', 'variationOptions'])
             ->get();
 

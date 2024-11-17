@@ -20,9 +20,9 @@ class Order extends Model
     public function products()
     {
         return $this->belongsToMany(Product::class)
-            ->withPivot('quantity');
+            ->withPivot('quantity', 'price_at_purchase')
+            ->withTimestamps();
     }
-    
 
     public function user()
     {
@@ -39,11 +39,13 @@ class Order extends Model
         return $this->belongsTo(Store::class);
     }
 
-    public function transaction(){
+    public function transaction()
+    {
         return $this->hasOne(Transaction::class);
     }
 
-    public function location(){
+    public function location()
+    {
         return $this->belongsTo(Location::class);
     }
 }
