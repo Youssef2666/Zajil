@@ -165,9 +165,6 @@ class StoreController extends Controller
     {
         $user = Auth::user();
 
-        $order_count = $user->store->orders()->count();
-        $canceled_count = $user->store->orders()->where('status', 'canceled')->count();
-
         if (!$user->store) {
             return $this->error('ليس لديك متجر', 404);
         }
@@ -184,13 +181,18 @@ class StoreController extends Controller
 
         $orders = $query->get()->sortByDesc('created_at');
         $ordersCount = $orders->count();
-        $totalRevenue = $orders->where('status', 'completed')->sum('total');
-        $sales = $orders->where('status', 'completed')->sum('quantity');
+        $totalRevenue = $orders->where('status', 'delivered')->sum('total');
+        $sales = $orders
+        ->where('status', 'delivered')
+        ->flatMap(function ($order) {
+            return $order->products->pluck('pivot.quantity');
+        })
+        ->sum();
         $canceledOrders = $orders->where('status', 'canceled')->count();
 
         return $this->success([
-            'order_count' => $order_count,
-            'canceled_count' => $canceled_count,
+            'order_count' => $ordersCount,
+            'canceled_count' => $canceledOrders,
             'total_revenue' => $totalRevenue,
             'sales' => $sales,
             'orders' => OrderResource::collection($orders)
