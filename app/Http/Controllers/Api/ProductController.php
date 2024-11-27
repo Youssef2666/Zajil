@@ -61,6 +61,9 @@ class ProductController extends Controller
             'price' => $request->price,
             'stock' => $request->stock,
             'product_category_id' => $request->product_category_id,
+            'discount_percentage' => $request->discount_percentage ?? null,
+            'discount_start' => $request->discount_start ?? null,
+            'discount_end' => $request->discount_end ?? null,
             'store_id' => $user->store->id,
         ]);
 
@@ -78,7 +81,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = Product::find($id);
+        $product->update($request->all());
+        return $this->success(ProductResource::make($product));
     }
 
     /**

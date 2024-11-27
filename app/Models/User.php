@@ -3,14 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Filament\Panel;
-use Laravel\Sanctum\HasApiTokens;
-use Laravel\Jetstream\HasProfilePhoto;
-use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
-use Laravel\Fortify\TwoFactorAuthenticatable;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use Laravel\Jetstream\HasProfilePhoto;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -135,5 +135,25 @@ class User extends Authenticatable implements FilamentUser
     public function phones()
     {
         return $this->hasMany(UserPhone::class);
+    }
+
+    public function chatsAsCustomer()
+    {
+        return $this->hasMany(Chat::class);
+    }
+
+    public function chatsAsStoreOwner()
+    {
+        return $this->hasManyThrough(Chat::class, Store::class, 'user_id', 'store_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chat_participants');
     }
 }

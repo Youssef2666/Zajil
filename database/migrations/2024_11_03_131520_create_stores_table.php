@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\StoreLocation;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,10 +16,11 @@ return new class extends Migration
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->unique();
+            $table->foreignIdFor(StoreLocation::class)->nullable();
             $table->string('name')->unique();
             $table->text('description')->nullable();
-            $table->string('latitude')->nullable();
-            $table->string('longitude')->nullable();
+            // $table->string('latitude')->nullable();
+            // $table->string('longitude')->nullable();
             $table->text('image')->nullable();
             $table->timestamps();
         });

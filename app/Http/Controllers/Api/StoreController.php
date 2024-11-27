@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Product;
@@ -23,7 +24,7 @@ class StoreController extends Controller
             $stores->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $stores = $stores->with('products','location')->get();
+        $stores = $stores->with('products', 'location')->get();
 
         return $this->success(StoreResource::collection($stores));
     }
@@ -38,8 +39,7 @@ class StoreController extends Controller
         $store = Store::create([
             'name' => $request->name,
             'description' => $request->description,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+            // 'store_location_id' => $request->store_location_id,
             'user_id' => Auth::id(),
         ]);
         return $this->success($store, status: 201);
@@ -50,7 +50,7 @@ class StoreController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $storeQuery = Store::with(['location','products' => function ($query) use ($request) {
+        $storeQuery = Store::with(['location', 'products' => function ($query) use ($request) {
             if ($request->has('product_category_id')) {
                 $query->where('product_category_id', $request->input('product_category_id'));
             }
@@ -161,4 +161,39 @@ class StoreController extends Controller
         return $this->success(message: 'تمت إضافة الموقع بنجاح');
     }
 
+    public function getUserStoreOrders(Request $request)
+    {
+        $user = Auth::user();
+
+        $order_count = $user->store->orders()->count();
+        $canceled_count = $user->store->orders()->where('status', 'canceled')->count();
+
+        if (!$user->store) {
+            return $this->error('ليس لديك متجر', 404);
+        }
+
+        $query = $user->store->orders()->with('products');
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('date_from') && $request->has('date_to')) {
+            $query->whereBetween('created_at', [$request->date_from, $request->date_to])->orderBy('created_at', 'desc');
+        }
+
+        $orders = $query->get()->sortByDesc('created_at');
+        $ordersCount = $orders->count();
+        $totalRevenue = $orders->where('status', 'completed')->sum('total');
+        $sales = $orders->where('status', 'completed')->sum('quantity');
+        $canceledOrders = $orders->where('status', 'canceled')->count();
+
+        return $this->success([
+            'order_count' => $order_count,
+            'canceled_count' => $canceled_count,
+            'total_revenue' => $totalRevenue,
+            'sales' => $sales,
+            'orders' => OrderResource::collection($orders)
+        ]);
+    }
 }

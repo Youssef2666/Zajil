@@ -27,6 +27,7 @@ class Store extends Model
         return $this->hasMany(Product::class);
     }
 
+
     public function ratings()
     {
         return $this->belongsToMany(User::class, 'rate_store')
@@ -61,5 +62,10 @@ class Store extends Model
 
     public function location(){
         return $this->hasOne(StoreLocation::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

@@ -64,7 +64,7 @@ class OrderController extends Controller
             $coupon = Coupon::where('code', $data['coupon_code'])->first();
 
             if (!$coupon || !$coupon->isValid() || !$coupon->hasRemainingUsage()) {
-                return response()->json(['message' => 'كود الخصم غير صالح'], 400);
+                return response()->json(['message' => 'كود الخصم غير صالح'], 400); 
             }
 
             $totalPrice = $coupon->applyDiscount($totalPrice);
