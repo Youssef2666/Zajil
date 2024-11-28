@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Store;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\StoreResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\StoreResource;
+use App\Models\Product;
+use App\Models\Store;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
@@ -197,6 +197,22 @@ class StoreController extends Controller
             $query->whereBetween('created_at', [$request->date_from, $request->date_to])->orderBy('created_at', 'desc');
         }
 
+        if ($request->has('user_name')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->user_name . '%');
+            });
+        }
+
+        if ($request->has('user_email')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('email', 'like', '%' . $request->user_email . '%');
+            });
+        }
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
         $orders = $query->get()->sortByDesc('created_at');
         $ordersCount = $orders->count();
         $totalRevenue = $orders->where('status', 'delivered')->sum('total');
@@ -208,6 +224,7 @@ class StoreController extends Controller
             ->sum();
         $canceledOrders = $orders->where('status', 'canceled')->count();
 
+        // Return the order data
         return $this->success([
             'order_count' => $ordersCount,
             'canceled_count' => $canceledOrders,
@@ -216,4 +233,5 @@ class StoreController extends Controller
             'orders' => OrderResource::collection($orders),
         ]);
     }
+
 }
