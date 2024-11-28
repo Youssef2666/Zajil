@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductResource;
-use App\Http\Resources\StoreResource;
-use App\Models\Product;
 use App\Models\Store;
-use App\Traits\ResponseTrait;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\StoreResource;
+use App\Http\Resources\ProductResource;
 
 class StoreController extends Controller
 {
@@ -18,13 +19,26 @@ class StoreController extends Controller
     use ResponseTrait;
     public function index(Request $request)
     {
-        $stores = Store::query();
+        $stores = Store::query()
+            ->leftJoin('rate_store', 'stores.id', '=', 'rate_store.store_id')
+            ->select('stores.*', DB::raw('AVG(rate_store.rating) as average_rating'))
+            ->groupBy('stores.id')
+
+            ->with('products', 'location');
 
         if ($request->has('search')) {
-            $stores->where('name', 'like', '%' . $request->search . '%');
+            $stores->where('stores.name', 'like', '%' . $request->search . '%');
         }
 
-        $stores = $stores->with('products', 'location')->get();
+        if ($request->has('min_rating')) {
+            $stores->having('average_rating', '>=', $request->min_rating);
+        }
+
+        if ($request->has('max_rating')) {
+            $stores->having('average_rating', '<=', $request->max_rating);
+        }
+
+        $stores = $stores->get();
 
         return $this->success(StoreResource::collection($stores));
     }
@@ -183,11 +197,11 @@ class StoreController extends Controller
         $ordersCount = $orders->count();
         $totalRevenue = $orders->where('status', 'delivered')->sum('total');
         $sales = $orders
-        ->where('status', 'delivered')
-        ->flatMap(function ($order) {
-            return $order->products->pluck('pivot.quantity');
-        })
-        ->sum();
+            ->where('status', 'delivered')
+            ->flatMap(function ($order) {
+                return $order->products->pluck('pivot.quantity');
+            })
+            ->sum();
         $canceledOrders = $orders->where('status', 'canceled')->count();
 
         return $this->success([
@@ -195,7 +209,7 @@ class StoreController extends Controller
             'canceled_count' => $canceledOrders,
             'total_revenue' => $totalRevenue,
             'sales' => $sales,
-            'orders' => OrderResource::collection($orders)
+            'orders' => OrderResource::collection($orders),
         ]);
     }
 }
