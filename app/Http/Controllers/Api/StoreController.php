@@ -38,6 +38,10 @@ class StoreController extends Controller
             $stores->having('average_rating', '<=', $request->max_rating);
         }
 
+        if ($request->has('most_rated')) {
+            $stores->orderByDesc('average_rating');
+        }
+
         $stores = $stores->get();
 
         return $this->success(StoreResource::collection($stores));
