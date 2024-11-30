@@ -14,12 +14,11 @@ class StoreResource extends JsonResource
             'user_id' => $this->user_id,
             'name' => $this->name,
             'description' => $this->description,
-            // 'latitude' => $this->latitude,
-            // 'longitude' => $this->longitude,
             'image' => $this->image,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
-            'products' => ProductResource::collection($this->whenLoaded('products')),
+            // 'product_categories' => $this->products->pluck('productCategory')->unique('id'), // Extract unique categories
+            // 'products' => ProductResource::collection($this->whenLoaded('products')),
             'categories' => $this->whenLoaded('products', function () {
                 return $this->products
                     ->pluck('productCategory')

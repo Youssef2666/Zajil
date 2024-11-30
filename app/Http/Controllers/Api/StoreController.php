@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-
-use App\Models\Store;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\StoreResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\StoreResource;
+use App\Models\Product;
+use App\Models\Store;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
@@ -22,10 +21,30 @@ class StoreController extends Controller
     {
         $stores = Store::query()
             ->leftJoin('rate_store', 'stores.id', '=', 'rate_store.store_id')
-            ->select('stores.*', DB::raw('AVG(rate_store.rating) as average_rating'))
-            ->groupBy('stores.id')
-            ->with('products.productCategory', 'location');
+            ->select([
+                'stores.id',
+                'stores.name',
+                'stores.user_id',
+                'stores.image',
+                'stores.description',
+                'stores.created_at',
+                'stores.updated_at',
+                DB::raw('AVG(rate_store.rating) as average_rating'),
+            ])
+            ->groupBy([
+                'stores.id',
+                'stores.name',
+                'stores.user_id',
+                'stores.image',
+                'stores.description',
+                'stores.created_at',
+                'stores.updated_at',
+            ])
+            ->with(['location', 'products.productCategory' => function ($query) {
+                $query->distinct();
+            }]);
 
+        // Apply filters
         if ($request->has('search')) {
             $stores->where('stores.name', 'like', '%' . $request->search . '%');
         }
@@ -46,6 +65,7 @@ class StoreController extends Controller
 
         return $this->success(StoreResource::collection($stores));
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -137,7 +157,7 @@ class StoreController extends Controller
 
         if ($request->has('most_rated') && $request->most_rated) {
             $query->withCount('ratings')
-                  ->orderBy('ratings_count', 'desc');
+                ->orderBy('ratings_count', 'desc');
         }
 
         $products = $query->get();
