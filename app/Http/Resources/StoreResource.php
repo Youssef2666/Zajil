@@ -17,8 +17,6 @@ class StoreResource extends JsonResource
             'image' => $this->image,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
-            // 'product_categories' => $this->products->pluck('productCategory')->unique('id'), // Extract unique categories
-            // 'products' => ProductResource::collection($this->whenLoaded('products')),
             'categories' => $this->whenLoaded('products', function () {
                 return $this->products
                     ->pluck('productCategory')
@@ -28,10 +26,11 @@ class StoreResource extends JsonResource
                             'id' => $category->id,
                             'name' => $category->name,
                         ];
-                    });
+                    })
+                    ->values(); 
             }),
             'location' => $this->whenLoaded('location'),
         ];
     }
-
 }
+
