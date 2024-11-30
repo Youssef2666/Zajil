@@ -24,7 +24,7 @@ class StoreController extends Controller
             ->leftJoin('rate_store', 'stores.id', '=', 'rate_store.store_id')
             ->select('stores.*', DB::raw('AVG(rate_store.rating) as average_rating'))
             ->groupBy('stores.id')
-            ->with('location', 'productCategories');
+            ->with('products.productCategory', 'location');
 
         if ($request->has('search')) {
             $stores->where('stores.name', 'like', '%' . $request->search . '%');
