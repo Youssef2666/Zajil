@@ -2,27 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-<<<<<<< HEAD
-=======
-use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductResource;
-use App\Http\Resources\StoreResource;
-use App\Models\Product;
->>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
+
 use App\Models\Store;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< HEAD
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\StoreResource;
 use App\Http\Resources\ProductResource;
-=======
-use Illuminate\Support\Facades\DB;
->>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
 
 class StoreController extends Controller
 {
@@ -239,10 +229,6 @@ class StoreController extends Controller
             ->sum();
         $canceledOrders = $orders->where('status', 'canceled')->count();
 
-<<<<<<< HEAD
-=======
-        // Return the order data
->>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
         return $this->success([
             'order_count' => $ordersCount,
             'canceled_count' => $canceledOrders,
@@ -251,9 +237,4 @@ class StoreController extends Controller
             'orders' => OrderResource::collection($orders),
         ]);
     }
-<<<<<<< HEAD
-    //state products
-=======
-
->>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
 }
