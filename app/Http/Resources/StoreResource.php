@@ -27,15 +27,17 @@ class StoreResource extends JsonResource
                             'name' => $category->name,
                         ];
                     })
-                    ->values(); 
+                    ->values();
             }),
-            'products_string' => $this->whenLoaded('products', function () {
+            'categories_string' => $this->whenLoaded('products', function () {
                 return $this->products
-                    ->pluck('name') // Extract product names
-                    ->join(' and '); // Join names with "and"
+                    ->pluck('productCategory.name') // Extract category names
+                    ->unique() // Ensure unique names
+                    ->join(' و '); // Join names with "and"
             }),
             'location' => $this->whenLoaded('location'),
         ];
     }
 }
+
 
