@@ -29,6 +29,11 @@ class StoreResource extends JsonResource
                     })
                     ->values(); 
             }),
+            'products_string' => $this->whenLoaded('products', function () {
+                return $this->products
+                    ->pluck('name') // Extract product names
+                    ->join(' and '); // Join names with "and"
+            }),
             'location' => $this->whenLoaded('location'),
         ];
     }
