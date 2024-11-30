@@ -22,9 +22,9 @@ class Store extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function productCategories(){
-        return $this->hasManyThrough(ProductCategory::class, Product::class)->distinct();
-    }
+    // public function productCategories(){
+    //     return $this->hasManyThrough(ProductCategory::class, Product::class)->distinct();
+    // }
 
     public function products()
     {
