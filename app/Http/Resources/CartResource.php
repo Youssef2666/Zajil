@@ -20,7 +20,6 @@ class CartResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'store_id' => $this->store_id,
             'products' => $this->whenLoaded('products', function () {
                 return $this->products->map(function ($product) {
                     return [
@@ -29,6 +28,7 @@ class CartResource extends JsonResource
                         'store_id' => $product->store_id,
                         'name' => $product->name,
                         'description' => $product->description,
+                        'image' => $product->image,
                         'price' => number_format($product->price, 2), 
                         'stock' => $product->stock,
                         'created_at' => $product->created_at,

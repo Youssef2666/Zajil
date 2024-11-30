@@ -1,7 +1,6 @@
 <?php
 
-use App\Models\Order;
-use App\Models\Product;
+use App\Models\Chat;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,12 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_product', function (Blueprint $table) {
+        Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Order::class);
-            $table->foreignIdFor(Product::class);
-            $table->integer('quantity');
-            $table->decimal('price_at_purchase', 8, 2); 
+            $table->foreignIdFor(Chat::class)->constrained('chats')->onDelete('cascade');
+            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_product');
+        Schema::dropIfExists('chat_messages');
     }
 };

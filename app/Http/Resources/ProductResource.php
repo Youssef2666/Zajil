@@ -7,12 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  Request  $request
-     * @return array
-     */
     public function toArray($request)
     {
         $data = [
@@ -20,11 +14,11 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
+            'final_price' => $this->final_price, // Dynamic field
             'stock' => $this->stock,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
             'image' => $this->image,
-            
             'product_category' => $this->whenLoaded('productCategory', function () {
                 return [
                     'id' => $this->productCategory->id,
@@ -40,9 +34,15 @@ class ProductResource extends JsonResource
                 });
             }),
         ];
+
+        if ($request->routeIs('mostOrderedProducts')) {
+            $data['total_ordered_quantity'] = $this->total_ordered_quantity ?? 0;
+        }
+
         if ($this->pivot && $this->pivot->quantity !== null) {
             $data['quantity'] = $this->pivot->quantity;
         }
+
         return $data;
     }
 }

@@ -31,7 +31,7 @@ class CouponResource extends Resource
                 TextInput::make('code')->required(),
                 TextInput::make('discount_percentage')->required(),
                 DateTimePicker::make('expires_at')->required(),
-                TextInput::make('usage_count')->required(),
+                // TextInput::make('usage_count')->required(),
                 TextInput::make('usage_limit')->required(),
             ]);
     }
@@ -43,6 +43,7 @@ class CouponResource extends Resource
                 TextColumn::make('code'),
                 TextColumn::make('discount_percentage'),
                 TextColumn::make('expires_at'),
+                TextColumn::make('usage_count'),
             ])
             ->filters([
                 //

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -15,6 +15,10 @@ class Product extends Model
         'product_category_id',
         'store_id',
         'image',
+        'discount_value',
+        'discount_percentage',
+        'discount_start',
+        'discount_end',
     ];
 
     public function productCategory()
@@ -30,7 +34,7 @@ class Product extends Model
     public function orders()
     {
         return $this->belongsToMany(Order::class, 'order_product')
-            ->withPivot('quantity')
+            ->withPivot('quantity', 'price_at_purchase')
             ->withTimestamps();
     }
 
@@ -58,10 +62,27 @@ class Product extends Model
         return self::withCount(['orders as total_ordered_quantity' => function ($query) {
             $query->select(DB::raw("SUM(order_product.quantity)"));
         }])
-        ->orderByDesc('total_ordered_quantity')
-        ->take($limit)
-        ->get();
+            ->orderByDesc('total_ordered_quantity')
+            ->take($limit)
+            ->get();
     }
 
+    public function getFinalPriceAttribute()
+    {
+        $price = $this->price;
+
+        if ($this->discount_start && $this->discount_end) {
+            $now = now();
+            if ($now->between($this->discount_start, $this->discount_end)) {
+                if ($this->discount_value) {
+                    $price -= $this->discount_value;
+                } elseif ($this->discount_percentage) {
+                    $price -= $price * ($this->discount_percentage / 100);
+                }
+            }
+        }
+
+        return $price > 0 ? $price : 0; // Ensure the final price is not negative
+    }
 
 }

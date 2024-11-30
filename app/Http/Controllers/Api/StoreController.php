@@ -2,15 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+<<<<<<< HEAD
+=======
+use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\ProductResource;
+use App\Http\Resources\StoreResource;
+use App\Models\Product;
+>>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
 use App\Models\Store;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+<<<<<<< HEAD
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\StoreResource;
 use App\Http\Resources\ProductResource;
+=======
+use Illuminate\Support\Facades\DB;
+>>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
 
 class StoreController extends Controller
 {
@@ -18,13 +30,30 @@ class StoreController extends Controller
     use ResponseTrait;
     public function index(Request $request)
     {
-        $stores = Store::query();
+        $stores = Store::query()
+            ->leftJoin('rate_store', 'stores.id', '=', 'rate_store.store_id')
+            ->select('stores.*', DB::raw('AVG(rate_store.rating) as average_rating'))
+            ->groupBy('stores.id')
+
+            ->with('products', 'location');
 
         if ($request->has('search')) {
-            $stores->where('name', 'like', '%' . $request->search . '%');
+            $stores->where('stores.name', 'like', '%' . $request->search . '%');
         }
 
-        $stores = $stores->with('products','location')->get();
+        if ($request->has('min_rating')) {
+            $stores->having('average_rating', '>=', $request->min_rating);
+        }
+
+        if ($request->has('max_rating')) {
+            $stores->having('average_rating', '<=', $request->max_rating);
+        }
+
+        if ($request->has('most_rated')) {
+            $stores->orderByDesc('average_rating');
+        }
+
+        $stores = $stores->get();
 
         return $this->success(StoreResource::collection($stores));
     }
@@ -39,8 +68,7 @@ class StoreController extends Controller
         $store = Store::create([
             'name' => $request->name,
             'description' => $request->description,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+            // 'store_location_id' => $request->store_location_id,
             'user_id' => Auth::id(),
         ]);
         return $this->success($store, status: 201);
@@ -51,7 +79,7 @@ class StoreController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $storeQuery = Store::with(['location','products' => function ($query) use ($request) {
+        $storeQuery = Store::with(['location', 'products' => function ($query) use ($request) {
             if ($request->has('product_category_id')) {
                 $query->where('product_category_id', $request->input('product_category_id'));
             }
@@ -211,6 +239,10 @@ class StoreController extends Controller
             ->sum();
         $canceledOrders = $orders->where('status', 'canceled')->count();
 
+<<<<<<< HEAD
+=======
+        // Return the order data
+>>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
         return $this->success([
             'order_count' => $ordersCount,
             'canceled_count' => $canceledOrders,
@@ -219,5 +251,9 @@ class StoreController extends Controller
             'orders' => OrderResource::collection($orders),
         ]);
     }
+<<<<<<< HEAD
     //state products
+=======
+
+>>>>>>> e61fbfd5853581671ef8ec7081cd8c55a236ca3c
 }

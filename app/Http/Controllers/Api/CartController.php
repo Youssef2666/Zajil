@@ -35,24 +35,24 @@ class CartController extends Controller
         $user = Auth::user();
         $product = Product::findOrFail($request->product_id);
 
-        $cart = Cart::firstOrCreate(
-            ['user_id' => $user->id],
-            ['store_id' => $product->store_id]
-        );
-
-        if ($cart->store_id === null) {
-            $cart->store_id = $product->store_id;
-            $cart->save();
+        if ($request->quantity > $product->stock) {
+            return $this->error(message: 'Requested quantity exceeds available stock.', code: 400);
         }
 
-        if ($cart->store_id != $product->store_id) {
-            return response()->json([
-                'message' => 'You can only add products from the same store to the cart.',
-            ], 400);
-        }
+        $cart = Cart::firstOrCreate(['user_id' => $user->id]);
 
-        // Add the product to the cart with the specified quantity
-        $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+        $existingProduct = $cart->products()->where('product_id', $product->id)->first();
+        if ($existingProduct) {
+            $newQuantity = $existingProduct->pivot->quantity + $request->quantity;
+
+            if ($newQuantity > $product->stock) {
+                return $this->error(message: 'Total quantity in the cart exceeds available stock.', code: 400);
+            }
+
+            $cart->products()->updateExistingPivot($product->id, ['quantity' => $newQuantity]);
+        } else {
+            $cart->products()->attach($request->product_id, ['quantity' => $request->quantity]);
+        }
 
         return $this->success(message: 'Product added to cart successfully');
     }
@@ -85,6 +85,12 @@ class CartController extends Controller
 
         if (!$cart) {
             return $this->error('السلة غير موجودة', 404);
+        }
+
+        $product = Product::findOrFail($request->product_id);
+
+        if ($request->quantity > $product->stock) {
+            return $this->error('الكمية المطلوبة تتجاوز الكمية المتوفرة في المخزون', 400);
         }
 
         $productExists = $cart->products()->where('product_id', $request->product_id)->exists();

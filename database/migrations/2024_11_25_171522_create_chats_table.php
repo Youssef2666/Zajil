@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Order;
-use App\Models\Product;
+use App\Models\User;
+use App\Models\Store;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_product', function (Blueprint $table) {
+        Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Order::class);
-            $table->foreignIdFor(Product::class);
-            $table->integer('quantity');
-            $table->decimal('price_at_purchase', 8, 2); 
+            $table->foreignIdFor(Store::class)->constrained()->onDelete('cascade');
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+            $table->unique(['store_id', 'user_id']);
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_product');
+        Schema::dropIfExists('chats');
     }
 };

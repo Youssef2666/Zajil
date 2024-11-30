@@ -35,6 +35,9 @@ class ProductController extends Controller
             ->when($request->most_popular, function ($query) {
                 $query->withCount('favouritedByUsers')->orderBy('favourited_by_users_count', 'desc');
             })
+            ->when($request->most_rated, function ($query) {
+                $query->withAvg('ratings', 'rating')->orderBy('ratings_avg_rating', 'desc');
+            })
             ->with(['productCategory', 'variationOptions'])
             ->get();
 
@@ -58,6 +61,9 @@ class ProductController extends Controller
             'price' => $request->price,
             'stock' => $request->stock,
             'product_category_id' => $request->product_category_id,
+            'discount_percentage' => $request->discount_percentage ?? null,
+            'discount_start' => $request->discount_start ?? null,
+            'discount_end' => $request->discount_end ?? null,
             'store_id' => $user->store->id,
         ]);
 
@@ -67,7 +73,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = Product::with('productCategory', 'variationOptions')->find($id);
-        return $this->success($product);
+        return $this->success(ProductResource::make($product));
     }
 
     /**
@@ -75,7 +81,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $product = Product::find($id);
+        $product->update($request->all());
+        return $this->success(ProductResource::make($product));
     }
 
     /**
@@ -139,10 +147,9 @@ class ProductController extends Controller
     public function mostOrderedProducts()
     {
         $mostOrderedProducts = Product::getMostOrderedProducts();
-
+    
         return response()->json([
-            'most_ordered_products' => $mostOrderedProducts,
+            'most_ordered_products' => ProductResource::collection($mostOrderedProducts),
         ]);
     }
-
 }

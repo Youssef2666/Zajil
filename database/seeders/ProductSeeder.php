@@ -49,7 +49,7 @@ class ProductSeeder extends Seeder
             [
                 'product_category_id' => 2,
                 'store_id' => 1,
-                'name' => 'يا صاحبي',
+                'name' => 'test',
                 'description' => 'لون ذهبي',
                 'price' => 50,
                 'stock' => 7,

@@ -1,11 +1,10 @@
 <?php
 
 use App\Models\ProductCategory;
-use App\Models\Retal;
 use App\Models\Store;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -23,6 +22,14 @@ return new class extends Migration
             $table->decimal('price', 8, 2);
             $table->integer('stock');
             $table->text('image')->nullable();
+
+            //start discount columns
+            $table->decimal('discount_value', 8, 2)->nullable();
+            $table->decimal('discount_percentage', 5, 2)->nullable();
+            $table->timestamp('discount_start')->nullable();
+            $table->timestamp('discount_end')->nullable();
+            //end discount columns
+
             $table->timestamps();
         });
     }

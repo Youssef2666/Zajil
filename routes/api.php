@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariationController;
 use App\Http\Controllers\Api\WalletController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatMessageController;
 
 Route::get('/user', [UserController::class, 'whoAmI'])->middleware('auth:sanctum');
 
@@ -45,6 +47,8 @@ Route::apiResource('orders', OrderController::class)->middleware(['auth:sanctum'
 Route::apiResource('stores', StoreController::class)->middleware('auth:sanctum');
 Route::apiResource('variations', VariationController::class)->middleware('auth:sanctum');
 Route::apiResource('transactions', TransactionController::class)->middleware('auth:sanctum');
+Route::apiResource('chats', ChatController::class)->middleware('auth:sanctum');
+Route::apiResource('chat-messages', ChatMessageController::class)->middleware('auth:sanctum');
 
 Route::post('/users/update', [UserController::class, 'update'])->middleware('auth:sanctum');
 
@@ -75,9 +79,6 @@ Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verify'])
 
 //wallet
 Route::get('/wallet', [WalletController::class, 'index'])->middleware('auth:sanctum');
-
-
-
 Route::post('/products/{productId}/variation-options', [ProductController::class, 'addVariationOptionsToProduct']);
 
 Route::post('/products/{productId}/favourite', [ProductController::class, 'addProductToFavourite'])->middleware('auth:sanctum');
@@ -107,5 +108,6 @@ Route::get('/stores/{store}/products', [StoreController::class, 'getStoreProduct
 Route::get('/stores/{store}/categories', [StoreController::class, 'getStoreCategories'])->middleware('auth:sanctum');
 
 Route::post('/wallet/transfer', [WalletController::class, 'transferBalance'])->middleware('auth:sanctum');
+Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts'])->name('mostOrderedProducts');
 
-Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts']);
+Route::get('user/store/orders', [StoreController::class, 'getUserStoreOrders'])->middleware('auth:sanctum');
