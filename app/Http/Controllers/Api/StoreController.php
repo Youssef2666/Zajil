@@ -44,7 +44,6 @@ class StoreController extends Controller
                 $query->distinct();
             }]);
 
-        // Apply filters
         if ($request->has('search')) {
             $stores->where('stores.name', 'like', '%' . $request->search . '%');
         }
@@ -61,9 +60,10 @@ class StoreController extends Controller
             $stores->orderByDesc('average_rating');
         }
 
-        $stores = $stores->get();
+        $perPage = $request->get('per_page', 10);
+        $stores = $stores->paginate($perPage);
 
-        return $this->success(StoreResource::collection($stores));
+        return $this->success(StoreResource::collection($stores)->response()->getData(true));
     }
 
     /**

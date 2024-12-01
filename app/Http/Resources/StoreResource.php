@@ -31,9 +31,9 @@ class StoreResource extends JsonResource
             }),
             'categories_string' => $this->whenLoaded('products', function () {
                 return $this->products
-                    ->pluck('productCategory.name') // Extract category names
-                    ->unique() // Ensure unique names
-                    ->join(' و '); // Join names with "and"
+                    ->pluck('productCategory.name')
+                    ->unique()
+                    ->join(' و '); 
             }),
             'location' => $this->whenLoaded('location'),
         ];
