@@ -23,12 +23,10 @@ return new class extends Migration
             $table->integer('stock');
             $table->text('image')->nullable();
 
-            //start discount columns
             $table->decimal('discount_value', 8, 2)->nullable();
             $table->decimal('discount_percentage', 5, 2)->nullable();
             $table->timestamp('discount_start')->nullable();
             $table->timestamp('discount_end')->nullable();
-            //end discount columns
 
             $table->timestamps();
         });

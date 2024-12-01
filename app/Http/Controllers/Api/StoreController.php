@@ -63,7 +63,8 @@ class StoreController extends Controller
         $perPage = $request->get('per_page', 10);
         $stores = $stores->paginate($perPage);
 
-        return $this->success(StoreResource::collection($stores)->response()->getData(true));
+        // Directly return the paginated response
+        return StoreResource::collection($stores)->response();
     }
 
     /**
