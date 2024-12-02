@@ -9,12 +9,14 @@ class ProductResource extends JsonResource
 {
     public function toArray($request)
     {
+        $user = $request->user();
         $data = [
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
             'final_price' => $this->final_price, // Dynamic field
+            'is_favourite' => $user ? $user->favouriteProducts->contains($this->id) : false,
             'stock' => $this->stock,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
