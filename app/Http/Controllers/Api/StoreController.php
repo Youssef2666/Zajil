@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductResource;
-use App\Http\Resources\StoreResource;
-use App\Models\Product;
 use App\Models\Store;
-use App\Traits\ResponseTrait;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\ResponseTrait;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\StoreResource;
+use App\Http\Resources\ProductResource;
 
 class StoreController extends Controller
 {
@@ -167,13 +168,29 @@ class StoreController extends Controller
 
     public function getStoreCategories(Request $request, string $id)
     {
-        $categories = Product::where('store_id', $id)
+        $query = Product::where('store_id', $id)
             ->join('product_categories', 'products.product_category_id', '=', 'product_categories.id')
             ->select('product_categories.id', 'product_categories.name', 'product_categories.image')
-            ->distinct()
-            ->get();
+            ->distinct();
 
-        return $this->success($categories);
+        $perPage = $request->get('per_page', 10); // Default to 10 items per page
+        $categories = $query->paginate($perPage);
+
+        return response()->json([
+            'data' => $categories->items(),
+            'links' => [
+                'first' => $categories->url(1),
+                'last' => $categories->url($categories->lastPage()),
+                'prev' => $categories->previousPageUrl(),
+                'next' => $categories->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'per_page' => $categories->perPage(),
+                'total' => $categories->total(),
+            ],
+        ]);
     }
 
     public function addStoreLocation(Request $request)
@@ -211,14 +228,32 @@ class StoreController extends Controller
             return $this->error('ليس لديك متجر', 404);
         }
 
-        $query = $user->store->orders()->with('products');
+        $query = $user->store->orders()->with('user');
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
-        if ($request->has('date_from') && $request->has('date_to')) {
-            $query->whereBetween('created_at', [$request->date_from, $request->date_to])->orderBy('created_at', 'desc');
+        if ($request->has('date_filter')) {
+            $now = now();
+            switch ($request->date_filter) {
+                case 'today':
+                    $query->whereDate('created_at', $now->toDateString());
+                    break;
+                case 'this_week':
+                    $query->whereBetween('created_at', [
+                        $now->clone()->startOfWeek(Carbon::SATURDAY),
+                        $now->clone()->endOfWeek(Carbon::FRIDAY)
+                    ]);
+                    break;
+                case 'this_month':
+                    $query->whereMonth('created_at', $now->month)
+                        ->whereYear('created_at', $now->year);
+                    break;
+                case 'this_year':
+                    $query->whereYear('created_at', $now->year);
+                    break;
+            }
         }
 
         if ($request->has('user_name')) {
@@ -235,6 +270,17 @@ class StoreController extends Controller
 
         if ($request->has('user_id')) {
             $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->has('min_total')) {
+            $query->where('total', '>=', $request->min_total);
+        }
+        if ($request->has('max_total')) {
+            $query->where('total', '<=', $request->max_total);
+        }
+
+        if ($request->has('code')) {
+            $query->where('code', 'like', '%' . $request->code . '%');
         }
 
         $orders = $query->get()->sortByDesc('created_at');
@@ -256,4 +302,22 @@ class StoreController extends Controller
             'orders' => OrderResource::collection($orders),
         ]);
     }
+
+    // public function getUserStoreProducts(Request $request, string $id)
+    // {
+    //     $query = Product::with('productCategory', 'variationOptions')->where('store_id', $id);
+
+    //     if ($request->has('product_category_id')) {
+    //         $query->where('product_category_id', $request->product_category_id);
+    //     }
+    //     if ($request->has('most_rated') && $request->most_rated) {
+    //         $query->withCount('ratings')
+    //             ->orderBy('ratings_count', 'desc');
+    //     }
+
+    //     $perPage = $request->get('per_page', 10);
+    //     $products = $query->paginate($perPage);
+
+    //     return ProductResource::collection($products)->response();
+    // }
 }

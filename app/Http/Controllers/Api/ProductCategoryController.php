@@ -15,13 +15,6 @@ class ProductCategoryController extends Controller
         $categories = ProductCategory::with('variations')->get();
         return $this->success($categories);
     }
-//     public function index()
-// {
-//     // Get all categories along with their variations, parent category, and child categories
-//     $categories = ProductCategory::with(['variations', 'parent', 'children'])->get();
-
-//     return $this->success($categories);
-// }
 
     /**
      * Store a newly created resource in storage.

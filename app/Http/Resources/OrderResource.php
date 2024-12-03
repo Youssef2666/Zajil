@@ -30,6 +30,13 @@ class OrderResource extends JsonResource
                     'address' => $this->location->address,
                 ];
             }),
+            'user' => $this->whenLoaded('user', function () {
+                return [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                    'profile_photo_path' => $this->user->profile_photo_path,
+                ];
+            }),
         ];
     }
 }
