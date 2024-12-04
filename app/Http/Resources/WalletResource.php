@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WalletResource extends JsonResource
@@ -25,8 +24,15 @@ class WalletResource extends JsonResource
         return [
             'id' => $this->id,
             'balance' => $this->balance,
-            'transactions' => TransactionResource::collection($this->Mytransactions)->response()->getData(true),
+            'transactions' => TransactionResource::collection($this->Mytransactions),
+            'meta' => [
+                'current_page' => $this->Mytransactions->currentPage(),
+                'per_page' => $this->Mytransactions->perPage(),
+                'total' => $this->Mytransactions->total(),
+                'last_page' => $this->Mytransactions->lastPage(),
+                'from' => $this->Mytransactions->firstItem(),
+                'to' => $this->Mytransactions->lastItem(),
+            ],
         ];
     }
 }
-

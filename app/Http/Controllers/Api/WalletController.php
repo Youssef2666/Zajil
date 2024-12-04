@@ -24,7 +24,7 @@ class WalletController extends Controller
 
         $transactions = $wallet->transactions()->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return $this->success(new WalletResource($wallet, $transactions));
+        return new WalletResource($wallet, $transactions);
     }
 
     public function store(Request $request)
