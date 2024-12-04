@@ -303,21 +303,4 @@ class StoreController extends Controller
         ]);
     }
 
-    // public function getUserStoreProducts(Request $request, string $id)
-    // {
-    //     $query = Product::with('productCategory', 'variationOptions')->where('store_id', $id);
-
-    //     if ($request->has('product_category_id')) {
-    //         $query->where('product_category_id', $request->product_category_id);
-    //     }
-    //     if ($request->has('most_rated') && $request->most_rated) {
-    //         $query->withCount('ratings')
-    //             ->orderBy('ratings_count', 'desc');
-    //     }
-
-    //     $perPage = $request->get('per_page', 10);
-    //     $products = $query->paginate($perPage);
-
-    //     return ProductResource::collection($products)->response();
-    // }
 }

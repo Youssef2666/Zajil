@@ -15,7 +15,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'final_price' => $this->final_price, // Dynamic field
+            'final_price' => $this->final_price,
             'is_favourite' => $user ? $user->favouriteProducts->contains($this->id) : false,
             'stock' => $this->stock,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,

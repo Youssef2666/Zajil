@@ -9,12 +9,14 @@ class StoreResource extends JsonResource
 {
     public function toArray($request)
     {
+        $user = $request->user();
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'name' => $this->name,
             'description' => $this->description,
             'image' => $this->image,
+            'is_favourite' => $user ? $user->favouriteStores->contains($this->id) : false,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
             'categories' => $this->whenLoaded('products', function () {
