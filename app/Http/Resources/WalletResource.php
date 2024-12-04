@@ -7,12 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class WalletResource extends JsonResource
 {
-    private $transactions;
+    private $Mytransactions;
 
     public function __construct($resource, $transactions = null)
     {
         parent::__construct($resource);
-        $this->transactions = $transactions;
+        $this->Mytransactions = $transactions;
     }
 
     /**
@@ -25,17 +25,7 @@ class WalletResource extends JsonResource
         return [
             'id' => $this->id,
             'balance' => $this->balance,
-                'transactions' => $this->transactions->items(),
-                'meta' => [
-                    'current_page' => $this->transactions->currentPage(),
-                    'from' => $this->transactions->firstItem(),
-                    'last_page' => $this->transactions->lastPage(),
-                    'links' => $this->transactions->linkCollection()->toArray(),
-                    'path' => $this->transactions->path(),
-                    'per_page' => $this->transactions->perPage(),
-                    'to' => $this->transactions->lastItem(),
-                    'total' => $this->transactions->total(),
-                ],
+            'transactions' => TransactionResource::collection($this->Mytransactions)->response()->getData(true),
         ];
     }
 }

@@ -15,6 +15,7 @@ class TransactionResource extends JsonResource
         'description' => $this->description,
         'created_at' => $this->created_at,
         'updated_at' => $this->updated_at,
+        'wallet' => $this->whenLoaded('wallet'),
     ];
 
     if ($this->order && $this->order->id) {
