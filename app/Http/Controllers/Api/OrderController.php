@@ -18,7 +18,6 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $status = $request->input('status');
-
         $ordersQuery = Auth::user()->orders()->with(['location', 'products' => function ($query) {
             $query->withPivot('quantity')
                 ->with(['productCategory']);
@@ -28,9 +27,13 @@ class OrderController extends Controller
             $ordersQuery->where('status', $status);
         }
 
-        $orders = $ordersQuery->get();
+        $ordersQuery->orderBy('created_at', 'desc');
 
-        return $this->success(OrderResource::collection($orders));
+        $perPage = $request->get('per_page', 10);
+
+        $orders = $ordersQuery->paginate($perPage);
+
+        return OrderResource::collection($orders)->response();
     }
 
     public function store(Request $request)
@@ -64,7 +67,7 @@ class OrderController extends Controller
             $coupon = Coupon::where('code', $data['coupon_code'])->first();
 
             if (!$coupon || !$coupon->isValid() || !$coupon->hasRemainingUsage()) {
-                return response()->json(['message' => 'كود الخصم غير صالح'], 400); 
+                return response()->json(['message' => 'كود الخصم غير صالح'], 400);
             }
 
             $totalPrice = $coupon->applyDiscount($totalPrice);
