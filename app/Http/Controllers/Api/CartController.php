@@ -2,40 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Cart;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CartResource;
+use App\Models\Cart;
+use App\Models\Product;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\ProductResource;
 
 class CartController extends Controller
 {
-    use ResponseTrait;
-    public function viewCart(Request $request)
-{
-    $perPage = $request->get('per_page', 10);
+    use ResponseTrait;public function viewCart(Request $request)
+    {
+        $perPage = $request->get('per_page', 10);
 
-    $cart = Cart::where('user_id', Auth::id())->first();
+        $cart = Cart::where('user_id', Auth::id())->first();
 
-    if (!$cart) {
-        return $this->success(data: null, message: 'السلة فارغة', status: 200);
+        if (!$cart) {
+            return $this->success(data: null, message: 'السلة فارغة', status: 200);
+        }
+
+        $products = $cart->products()->paginate($perPage);
+
+        $totalPrice = $cart->products->sum(function ($product) {
+            return $product->price * $product->pivot->quantity;
+        });
+
+        return new CartResource($cart, $products);
     }
-
-    $totalPrice = $cart->products->sum(function ($product) {
-        return $product->price * $product->pivot->quantity;
-    });
-
-    $products = $cart->products()->paginate($perPage);
-
-    return Response()->json([
-        'products' => ProductResource::collection($products)->response()->getData(true),
-        'total_price' => number_format($totalPrice, 2),
-        ]);
-}
-
 
     public function addToCart(Request $request)
     {

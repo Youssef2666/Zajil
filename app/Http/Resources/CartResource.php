@@ -6,6 +6,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CartResource extends JsonResource
 {
+    private $MyProducts;
+
+    public function __construct($resource, $products = null)
+    {
+        parent::__construct($resource);
+        $this->MyProducts = $products;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -20,23 +28,7 @@ class CartResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'products' => $this->whenLoaded('products', function () {
-                return $this->products->map(function ($product) {
-                    return [
-                        'id' => $product->id,
-                        'product_category_id' => $product->product_category_id,
-                        'store_id' => $product->store_id,
-                        'name' => $product->name,
-                        'description' => $product->description,
-                        'image' => $product->image,
-                        'price' => number_format($product->price, 2), 
-                        'stock' => $product->stock,
-                        'created_at' => $product->created_at,
-                        'updated_at' => $product->updated_at,
-                        'quantity' => $product->pivot->quantity,
-                    ];
-                });
-            }),
+            'products' =>  ProductResource::collection($this->MyProducts)->response()->getData(true),
             'total_price' => number_format($totalPrice, 2),
         ];
     }
