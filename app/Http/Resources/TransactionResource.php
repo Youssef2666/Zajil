@@ -31,7 +31,6 @@ class TransactionResource extends JsonResource
         }
     }
 
-    // and if receiver information is available
     if ($this->receiver) {
         if ($this->receiver->name) {
             $data['receiver_name'] = $this->receiver->name;
@@ -42,7 +41,6 @@ class TransactionResource extends JsonResource
         }
     }
 
-    // Remove any fields with null values
     return array_filter($data, fn($value) => !is_null($value));
 }
 

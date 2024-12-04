@@ -13,17 +13,18 @@ use Illuminate\Support\Facades\DB;
 class WalletController extends Controller
 {
     use ResponseTrait;
-    public function index()
+    public function index(Request $request)
     {
-        $wallet = Auth::user()->wallet()->with(['transactions' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->first();
+        $perPage = $request->get('per_page', 10);
+        $wallet = Auth::user()->wallet()->first();
 
         if (!$wallet) {
             return $this->error('Wallet not found.', 404);
         }
 
-        return $this->success(new WalletResource($wallet));
+        $transactions = $wallet->transactions()->orderBy('created_at', 'desc')->paginate($perPage);
+
+        return $this->success(new WalletResource($wallet, $transactions));
     }
 
     public function store(Request $request)
