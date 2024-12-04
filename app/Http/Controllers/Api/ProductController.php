@@ -44,8 +44,8 @@ class ProductController extends Controller
     $products = $productsQuery->paginate($perPage);
 
     return response()->json([
-        'total_products' => $products->total(), // Total count of products
-        'products' => ProductResource::collection($products)->response()->getData(true), // Paginated product data
+        'total_products' => $products->total(),
+        'products' => ProductResource::collection($products)->response()->getData(true),
     ]);
 }
 

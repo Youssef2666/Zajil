@@ -16,7 +16,6 @@ use App\Http\Resources\ProductResource;
 
 class StoreController extends Controller
 {
-
     use ResponseTrait;
     public function index(Request $request)
     {

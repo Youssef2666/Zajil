@@ -40,5 +40,4 @@ class CartResource extends JsonResource
             'total_price' => number_format($totalPrice, 2),
         ];
     }
-
 }

@@ -2,27 +2,30 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\CartResource;
 use App\Models\Cart;
 use App\Models\Product;
-use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductResource;
 
 class CartController extends Controller
 {
     use ResponseTrait;
-
     public function viewCart(Request $request)
     {
-        $cart = Cart::with('products')->where('user_id', Auth::id())->first();
+        $perPage = $request->get('per_page', 10);
 
-        if (!$cart || $cart->products->isEmpty()) {
+        $cart = Cart::where('user_id', Auth::id())->first();
+
+        if (!$cart) {
             return $this->success(data: null, message: 'السلة فارغة', status: 200);
         }
 
-        return $this->success(new CartResource($cart));
+        $products = $cart->products()->paginate($perPage);
+        return ProductResource::collection($products)->response()->getData(true);
     }
 
     public function addToCart(Request $request)
