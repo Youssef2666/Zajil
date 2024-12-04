@@ -15,18 +15,27 @@ class CartController extends Controller
 {
     use ResponseTrait;
     public function viewCart(Request $request)
-    {
-        $perPage = $request->get('per_page', 10);
+{
+    $perPage = $request->get('per_page', 10);
 
-        $cart = Cart::where('user_id', Auth::id())->first();
+    $cart = Cart::where('user_id', Auth::id())->first();
 
-        if (!$cart) {
-            return $this->success(data: null, message: 'السلة فارغة', status: 200);
-        }
-
-        $products = $cart->products()->paginate($perPage);
-        return ProductResource::collection($products)->response()->getData(true);
+    if (!$cart) {
+        return $this->success(data: null, message: 'السلة فارغة', status: 200);
     }
+
+    $totalPrice = $cart->products->sum(function ($product) {
+        return $product->price * $product->pivot->quantity;
+    });
+
+    $products = $cart->products()->paginate($perPage);
+
+    return Response()->json([
+        'products' => ProductResource::collection($products)->response()->getData(true),
+        'total_price' => number_format($totalPrice, 2),
+        ]);
+}
+
 
     public function addToCart(Request $request)
     {

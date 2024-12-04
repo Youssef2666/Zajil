@@ -11,16 +11,21 @@ use Illuminate\Support\Facades\Auth;
 class TransactionController extends Controller
 {
     use ResponseTrait;
-    public function index()
+    public function index(Request $request)
     {
-        $transactions = Auth::user()->transactions()->with('order.store','receiver')->get();
-        return $this->success(TransactionResource::collection($transactions));
+        $perPage = $request->get('per_page', 10);
+
+        $transactions = Auth::user()->transactions()
+            ->with('order.store', 'receiver')
+            ->paginate($perPage);
+
+        return TransactionResource::collection($transactions)->response()->getData(true);
     }
     public function show(Request $request, $transactionId)
     {
         $transaction = Auth::user()->transactions()
-        ->where('transactions.id', $transactionId)
-        ->with('order.store')
+            ->where('transactions.id', $transactionId)
+            ->with('order.store')
             ->first();
 
         if (!$transaction) {
@@ -29,8 +34,6 @@ class TransactionController extends Controller
 
         return $this->success(new TransactionResource($transaction));
     }
-
-
 
     public function getUserTransactions(Request $request)
     {
