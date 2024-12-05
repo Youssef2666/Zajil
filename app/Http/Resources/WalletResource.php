@@ -22,17 +22,17 @@ class WalletResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id' => $this->id,
+            // 'id' => $this->id,
             'balance' => $this->balance,
-            'transactions' => TransactionResource::collection($this->Mytransactions),
-            'meta' => [
-                'current_page' => $this->Mytransactions->currentPage(),
-                'per_page' => $this->Mytransactions->perPage(),
-                'total' => $this->Mytransactions->total(),
-                'last_page' => $this->Mytransactions->lastPage(),
-                'from' => $this->Mytransactions->firstItem(),
-                'to' => $this->Mytransactions->lastItem(),
-            ],
+            // 'transactions' => TransactionResource::collection($this->Mytransactions),
+            // 'meta' => [
+            //     'current_page' => $this->Mytransactions->currentPage(),
+            //     'per_page' => $this->Mytransactions->perPage(),
+            //     'total' => $this->Mytransactions->total(),
+            //     'last_page' => $this->Mytransactions->lastPage(),
+            //     'from' => $this->Mytransactions->firstItem(),
+            //     'to' => $this->Mytransactions->lastItem(),
+            // ],
         ];
     }
 }

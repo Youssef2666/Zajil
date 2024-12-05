@@ -22,9 +22,9 @@ class WalletController extends Controller
             return $this->error('Wallet not found.', 404);
         }
 
-        $transactions = $wallet->transactions()->orderBy('created_at', 'desc')->paginate($perPage);
+        // $transactions = $wallet->transactions()->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return new WalletResource($wallet, $transactions);
+        return new WalletResource($wallet);
     }
 
     public function store(Request $request)
