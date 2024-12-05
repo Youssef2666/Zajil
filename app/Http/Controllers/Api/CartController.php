@@ -14,7 +14,7 @@ class CartController extends Controller
 {
     use ResponseTrait;public function viewCart(Request $request)
     {
-        $perPage = $request->get('per_page', 2);
+        $perPage = $request->get('per_page', 10);
 
         $cart = Cart::where('user_id', Auth::id())->first();
 
