@@ -137,7 +137,19 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = Auth::user();
+
+        if (!$user->store) {
+            return $this->error('ليس لديك متجر', 404);
+        }
+
+        $order = $user->store->orders()->with('products')->find($id);
+
+        if (!$order) {
+            return $this->error('الطلب غير موجود', 404);
+        }
+
+        return $this->success(new OrderResource($order));
     }
 
     public function update(Request $request, string $id)

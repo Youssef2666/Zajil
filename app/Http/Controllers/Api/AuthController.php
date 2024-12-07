@@ -32,9 +32,9 @@ class AuthController extends Controller
                 $request->validated(),
             );
 
-            // $user->notify(new EmailVerificationNotification($user->email, $this->otp));
+            $user->notify(new EmailVerificationNotification($user->email, $this->otp));
             $token = $user->createToken('auth_token')->plainTextToken;
-            $user->sendEmailVerificationNotification();
+            // $user->sendEmailVerificationNotification();
             return $this->successWithToken(message: 'We sent you a LINK, check your email', code: 201, token: $token);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
