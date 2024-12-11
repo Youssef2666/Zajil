@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Product;
-use Illuminate\Http\Request;
-use App\Traits\ResponseTrait;
-use App\Models\CommentProduct;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CommentProductResource;
+use App\Models\CommentProduct;
+use App\Models\Product;
+use App\Traits\ResponseTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
@@ -39,18 +40,19 @@ class CommentController extends Controller
     public function getStoreComments($storeId)
     {
         $comments = DB::table('comment_store')
-            ->where('store_id', $storeId)
-            ->whereNull('parent_id')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($comment) {
-                $comment->replies = DB::table('comment_store')
-                    ->where('parent_id', $comment->id)
-                    ->orderBy('created_at', 'asc')
-                    ->get();
-
-                return $comment;
-            });
+            ->join('users', 'comment_store.user_id', '=', 'users.id')
+            ->where('comment_store.store_id', $storeId)
+            ->whereNull('comment_store.parent_id')
+            ->orderBy('comment_store.created_at', 'desc')
+            ->select(
+                'comment_store.id',
+                'comment_store.comment',
+                'comment_store.created_at',
+                'users.id as user_id',
+                'users.name as user_name',
+                'users.profile_photo_path'
+            )
+            ->get();
 
         return response()->json([
             'store_id' => $storeId,
@@ -79,11 +81,12 @@ class CommentController extends Controller
     {
         $product = Product::findOrFail($productId);
 
-        $comments = \App\Models\CommentProduct::where('product_id', $productId)
+        $comments = \App\Models\CommentProduct::with('user')
+            ->where('product_id', $productId)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return $this->success($comments);
+        return $this->success(CommentProductResource::collection($comments));
     }
 
 }
