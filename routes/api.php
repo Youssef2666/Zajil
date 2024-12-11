@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\SadadController;
 use App\Http\Controllers\Api\TLyncController;
 use App\Http\Controllers\Api\AdfaliController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\FireBaseNotificationController;
 use App\Http\Controllers\Api\LocalBankCardsController;
 use App\Http\Controllers\Api\RetalsController;
 use App\Http\Controllers\Api\ProductController;
@@ -111,3 +112,10 @@ Route::post('/wallet/transfer', [WalletController::class, 'transferBalance'])->m
 Route::get('/most-ordered-products', [ProductController::class, 'mostOrderedProducts'])->name('mostOrderedProducts');
 
 Route::get('user/store/orders', [StoreController::class, 'getUserStoreOrders'])->middleware('auth:sanctum');
+
+
+
+Route::post('firebase-notification', [FireBaseNotificationController::class, 'sendNotification'])->middleware('auth:sanctum');
+
+Route::post('products/add-comment', [CommentController::class, 'addCommentToProduct'])->middleware('auth:sanctum');
+Route::get('products/{id}/comments', [CommentController::class, 'getProductComments'])->middleware('auth:sanctum');

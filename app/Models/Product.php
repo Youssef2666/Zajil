@@ -90,4 +90,9 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(CommentProduct::class);
+    }
+
 }

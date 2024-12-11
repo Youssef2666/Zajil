@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Traits\ResponseTrait;
+use App\Models\CommentProduct;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    use ResponseTrait;
     public function addComment(Request $request)
     {
         $request->validate([
@@ -34,14 +38,12 @@ class CommentController extends Controller
 
     public function getStoreComments($storeId)
     {
-        // Retrieve the main comments for the store and their replies
         $comments = DB::table('comment_store')
             ->where('store_id', $storeId)
-            ->whereNull('parent_id') // Only get top-level comments
+            ->whereNull('parent_id')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($comment) {
-                // Retrieve replies for each top-level comment
                 $comment->replies = DB::table('comment_store')
                     ->where('parent_id', $comment->id)
                     ->orderBy('created_at', 'asc')
@@ -54,6 +56,34 @@ class CommentController extends Controller
             'store_id' => $storeId,
             'comments' => $comments,
         ]);
+    }
+
+    public function addCommentToProduct(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'comment' => 'required|string|max:255',
+        ]);
+        $userId = Auth::id();
+
+        $comment = CommentProduct::create([
+            'user_id' => $userId,
+            'product_id' => $request->product_id,
+            'comment' => $request->comment,
+        ]);
+
+        return $this->success(message: 'تم إضافة التعليق بنجاح', status: 201);
+    }
+
+    public function getProductComments($productId)
+    {
+        $product = Product::findOrFail($productId);
+
+        $comments = \App\Models\CommentProduct::where('product_id', $productId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->success($comments);
     }
 
 }

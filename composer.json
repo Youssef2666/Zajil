@@ -8,6 +8,8 @@
         "php": "^8.2",
         "filament/filament": "3.2.57",
         "ichtrojan/laravel-otp": "^2.0",
+        "kreait/laravel-firebase": "^5.10",
+        "laravel-notification-channels/fcm": "^4.5",
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.3",
         "laravel/sanctum": "^4.0",

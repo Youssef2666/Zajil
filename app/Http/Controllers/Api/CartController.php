@@ -9,7 +9,6 @@ use App\Models\Product;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
 class CartController extends Controller
 {
     use ResponseTrait;public function viewCart(Request $request)

@@ -156,4 +156,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->belongsToMany(Chat::class, 'chat_participants');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(CommentProduct::class);
+    }
 }
