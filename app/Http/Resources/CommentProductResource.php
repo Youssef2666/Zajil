@@ -23,8 +23,13 @@ class CommentProductResource extends JsonResource
                     'id' => $user->id,
                     'name' => $user->name,
                     'profile_photo_path' => $user->profile_photo_path,
+                    'rating' => $this->product
+                        ->ratings()
+                        ->where('user_id', $user->id)
+                        ->value('rating'),
                 ];
-            })
+            }),
         ];
     }
+
 }

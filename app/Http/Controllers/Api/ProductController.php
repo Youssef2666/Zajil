@@ -159,11 +159,11 @@ class ProductController extends Controller
         $existingRating = $product->ratings()->where('user_id', Auth::id())->exists();
 
         if ($existingRating) {
-            return $this->error('You have already rated this product', 400);
+            return $this->error('لقد قمت بتقييم هذا المنتج من قبل', 400);
         }
 
         $product->ratings()->attach(Auth::id(), ['rating' => $data['rating']]);
-        return $this->success($product, 'course rated successfully');
+        return $this->success(message:'تم تقييم المنتج بنجاح');
     }
 
     public function mostOrderedProducts()

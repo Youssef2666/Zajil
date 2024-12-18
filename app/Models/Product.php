@@ -82,9 +82,10 @@ class Product extends Model
             }
         }
 
-        return $price > 0 ? $price : 0; // Ensure the final price is not negative
+        return $price > 0 ? $price : 0;
     }
 
+    
     public function images()
     {
         return $this->hasMany(ProductImage::class);
