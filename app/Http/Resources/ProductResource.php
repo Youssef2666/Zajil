@@ -20,7 +20,12 @@ class ProductResource extends JsonResource
             'stock' => $this->stock,
             'average_rating' => $this->ratings()->avg('rating') ?? 0,
             'number_of_ratings' => $this->ratings->count(),
-            'image' => $this->image,
+            // 'image' => $this->image,
+            'images' => $this->whenLoaded('images', function () {
+                return $this->images->map(function ($image) {
+                    return $image->image;
+                });
+            }),
             'product_category' => $this->whenLoaded('productCategory', function () {
                 return [
                     'id' => $this->productCategory->id,

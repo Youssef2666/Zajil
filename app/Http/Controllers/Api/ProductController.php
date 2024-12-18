@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use App\Models\Store;
-use App\Traits\ResponseTrait;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Traits\ResponseTrait;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ProductResource;
 
 class ProductController extends Controller
 {
@@ -38,7 +39,15 @@ class ProductController extends Controller
         ->when($request->most_rated, function ($query) {
             $query->withAvg('ratings', 'rating')->orderBy('ratings_avg_rating', 'desc');
         })
-        ->with(['productCategory', 'variationOptions']);
+        ->when($request->most_ordered, function ($query) {
+            $query->addSelect([
+                'total_orders_quantity' => DB::table('order_product')
+                    ->selectRaw('SUM(quantity)')
+                    ->whereColumn('order_product.product_id', 'products.id'),
+            ])
+            ->orderBy('total_orders_quantity', 'desc');
+        })        
+        ->with(['images','productCategory', 'variationOptions']);
 
     $perPage = $request->get('per_page', 10);
     $products = $productsQuery->paginate($perPage);
@@ -94,7 +103,7 @@ class ProductController extends Controller
 
     public function show(string $id)
     {
-        $product = Product::with('productCategory', 'variationOptions')->find($id);
+        $product = Product::with('images','productCategory', 'variationOptions')->find($id);
         return $this->success(ProductResource::make($product));
     }
 
